@@ -1,0 +1,68 @@
+﻿// ==============================================================================
+// Du an: SolarClean - He thong ve sinh tam pin nang luong mat troi thong minh
+// Khoi chuc nang: FC1 (Power and Mode)
+// Mo ta: Quan ly nguon he thong, dung khan cap va khoa cheo lien dong Auto / Manual
+// Tuong duong ban ve Ladder: mode.pdf
+// ==============================================================================
+
+FUNCTION "Power and Mode" : Void
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+   VAR_TEMP 
+   END_VAR
+
+BEGIN
+   // Network 4: Khoa lien dong chong trung lap che do (Interlock)
+   "Datablock".TempFloat := "Datablock".On_Man OR "Datablock".On_Auto;
+
+   // --------------------------------------------------------------------------
+   // Network 1: Quan ly Bat/Tat nguon toan he thong (System On/Off)
+   // Khoi ham SR: Reset 1 (R1) co do uu tien cao nhat
+   // --------------------------------------------------------------------------
+   IF (NOT "Datablock".Off_System) OR "Datablock"."Temp Estop" THEN
+      "Datablock".System := FALSE;
+      "Datablock"."Temp HT" := FALSE;
+   ELSIF "Datablock".On_System THEN
+      "Datablock".System := TRUE;
+      "Datablock"."Temp HT" := TRUE;
+   END_IF;
+
+   // Khoa an toan cap nguon: Neu System = OFF, cuong buc xoa toan bo co che do
+   IF NOT "Datablock".System THEN
+      "Datablock".Auto := FALSE;
+      "Datablock".Man := FALSE;
+      "Datablock".TempAuto := FALSE;
+      "Datablock".TempMan := FALSE;
+      RETURN; // Thoat ngay, khong xu ly tiep logic che do
+   END_IF;
+
+   // --------------------------------------------------------------------------
+   // Network 2: Tuyen chon va duy tri che do TU DONG (Auto)
+   // Khoi ham SR: Uu tien Reset neu chuyen sang Man, co Estop, hoac mat TempFloat
+   // --------------------------------------------------------------------------
+   IF "Datablock".TempMan OR "Datablock"."Temp Estop" OR (NOT "Datablock".TempFloat) THEN
+      "Datablock".Auto := FALSE;
+      "Datablock".TempAuto := FALSE;
+   ELSIF "Datablock".System AND "Datablock".On_Auto THEN
+      "Datablock".Auto := TRUE;
+      "Datablock".TempAuto := TRUE;
+      // Khoa cheo ngat ngay che do Bang tay
+      "Datablock".Man := FALSE;
+      "Datablock".TempMan := FALSE;
+   END_IF;
+
+   // --------------------------------------------------------------------------
+   // Network 3: Tuyen chon va duy tri che do BANG TAY (Manual)
+   // Khoi ham SR: Uu tien Reset neu chuyen sang Auto, co Estop, hoac mat TempFloat
+   // --------------------------------------------------------------------------
+   IF "Datablock".TempAuto OR "Datablock"."Temp Estop" OR (NOT "Datablock".TempFloat) THEN
+      "Datablock".Man := FALSE;
+      "Datablock".TempMan := FALSE;
+   ELSIF "Datablock".System AND "Datablock".On_Man THEN
+      "Datablock".Man := TRUE;
+      "Datablock".TempMan := TRUE;
+      // Khoa cheo ngat ngay che do Tu dong
+      "Datablock".Auto := FALSE;
+      "Datablock".TempAuto := FALSE;
+   END_IF;
+END_FUNCTION

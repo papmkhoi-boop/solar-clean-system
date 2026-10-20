@@ -1,0 +1,3 @@
+trial,t_preprocess,t_seg_infer,t_seg_post,t_crop_32,t_cls_infer,t_det_infer,t_det_post,t_end_to_end
+1,0.1577,60.5010,0.9576,26.1717,53.3680,7.7455,0.7932,153.4889
+2,0.1207,58.6447,0.9571,25.5611,39.8628,7.6910,0.6960,137.7487

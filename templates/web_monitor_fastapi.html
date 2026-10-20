@@ -1,0 +1,3864 @@
+<!DOCTYPE html>
+
+
+<html lang="vi">
+
+
+<head>
+
+
+    <meta charset="UTF-8">
+
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+    <title>Solar Panel Cleaning — SCADA Monitor</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
+
+
+
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
+
+    <style>
+
+
+        /* ==================== CSS CUSTOM PROPERTIES ==================== */
+
+
+        :root {
+
+
+            --bg-0: #0b0e14;
+
+
+            --bg-1: #111620;
+
+
+            --bg-2: #171d2a;
+
+
+            --bg-3: #1e2636;
+
+
+            --bg-hover: #242e40;
+
+
+            --border: #2a3244;
+
+
+            --border-hl: #3b82f6;
+
+
+            --txt-1: #e2e8f0;
+
+
+            --txt-2: #94a3b8;
+
+
+            --txt-3: #64748b;
+
+
+            --green: #22c55e;
+
+
+            --green-dim: rgba(34,197,94,.15);
+
+
+            --red: #ef4444;
+
+
+            --red-dim: rgba(239,68,68,.15);
+
+
+            --yellow: #eab308;
+
+
+            --yellow-dim: rgba(234,179,8,.15);
+
+
+            --blue: #3b82f6;
+
+
+            --blue-dim: rgba(59,130,246,.12);
+
+
+            --cyan: #06b6d4;
+
+
+            --cyan-dim: rgba(6,182,212,.12);
+
+
+            --orange: #f97316;
+
+
+            --radius: 8px;
+
+
+            --shadow: 0 1px 3px rgba(0,0,0,.5);
+
+
+        }
+
+
+
+
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+
+
+
+
+        body {
+
+
+            background: var(--bg-0);
+
+
+            color: var(--txt-1);
+
+
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+
+
+            font-size: 13px;
+
+
+            line-height: 1.5;
+
+
+            overflow-x: hidden;
+
+
+            min-height: 100vh;
+
+
+        }
+
+
+
+
+
+        /* ==================== HEADER BAR ==================== */
+
+
+        .hd {
+
+
+            background: var(--bg-1);
+
+
+            border-bottom: 1px solid var(--border);
+
+
+            padding: 0 16px;
+
+
+            height: 44px;
+
+
+            display: flex;
+
+
+            align-items: center;
+
+
+            justify-content: space-between;
+
+
+            position: sticky;
+
+
+            top: 0;
+
+
+            z-index: 200;
+
+
+        }
+
+
+        .hd-left { display: flex; align-items: center; gap: 10px; }
+
+
+        .hd-logo { height: 28px; width: 28px; object-fit: contain; border-radius: 4px; }
+
+
+        .hd-name { font-weight: 700; font-size: 14px; color: var(--txt-1); letter-spacing: -.3px; }
+
+
+        .hd-tag {
+
+
+            font-size: 10px;
+
+
+            color: var(--txt-3);
+
+
+            background: var(--bg-3);
+
+
+            padding: 2px 7px;
+
+
+            border-radius: 4px;
+
+
+            border: 1px solid var(--border);
+
+
+            font-weight: 600;
+
+
+        }
+
+
+        .hd-right { display: flex; align-items: center; gap: 14px; }
+
+
+        .hd-ind { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--txt-3); }
+
+
+        .led {
+
+
+            width: 7px; height: 7px; border-radius: 50%;
+
+
+            display: inline-block;
+
+
+            transition: all .3s;
+
+
+        }
+
+
+        .led-g { background: var(--green); box-shadow: 0 0 6px var(--green); }
+
+
+        .led-r { background: var(--red); box-shadow: 0 0 6px var(--red); }
+
+
+        .led-y { background: var(--yellow); box-shadow: 0 0 5px var(--yellow); }
+
+
+        .hd-link {
+
+
+            color: var(--txt-3); text-decoration: none; font-size: 11px; transition: color .2s;
+
+
+        }
+
+
+        .hd-link:hover { color: var(--blue); }
+
+
+
+
+
+        /* ==================== TAB NAVIGATION ==================== */
+
+
+        .tab-bar {
+
+
+            display: flex;
+
+
+            background: var(--bg-1);
+
+
+            border-bottom: 2px solid var(--border);
+
+
+            padding: 0 16px;
+
+
+            gap: 0;
+
+
+        }
+
+
+        .tab-btn {
+
+
+            padding: 10px 24px;
+
+
+            font-size: 13px;
+
+
+            font-weight: 700;
+
+
+            color: var(--txt-3);
+
+
+            border: none;
+
+
+            background: none;
+
+
+            cursor: pointer;
+
+
+            position: relative;
+
+
+            display: flex;
+
+
+            align-items: center;
+
+
+            gap: 7px;
+
+
+            transition: color .2s;
+
+
+            letter-spacing: .3px;
+
+
+            text-transform: uppercase;
+
+
+            font-family: inherit;
+
+
+        }
+
+
+        .tab-btn:hover { color: var(--txt-2); }
+
+
+        .tab-btn.active {
+
+
+            color: var(--blue);
+
+
+        }
+
+
+        .tab-btn.active::after {
+
+
+            content: '';
+
+
+            position: absolute;
+
+
+            bottom: -2px;
+
+
+            left: 0; right: 0;
+
+
+            height: 2px;
+
+
+            background: var(--blue);
+
+
+            border-radius: 2px 2px 0 0;
+
+
+        }
+
+
+        .tab-page { display: none; }
+
+
+        .tab-page.active { display: block; }
+
+
+
+
+
+        /* ==================== KPI STRIP ==================== */
+
+
+        .kpi-strip {
+
+
+            display: grid;
+
+
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+
+
+            gap: 10px;
+
+
+            padding: 12px 16px 0;
+
+
+        }
+
+
+        .kpi {
+
+
+            background: var(--bg-2);
+
+
+            border: 1px solid var(--border);
+
+
+            border-radius: var(--radius);
+
+
+            padding: 12px 14px;
+
+
+            display: flex;
+
+
+            align-items: center;
+
+
+            gap: 12px;
+
+
+            transition: border-color .2s;
+
+
+        }
+
+
+        .kpi:hover { border-color: var(--border-hl); }
+
+
+        .kpi-icon {
+
+
+            width: 38px; height: 38px; border-radius: 8px;
+
+
+            display: flex; align-items: center; justify-content: center;
+
+
+            font-size: 17px; flex-shrink: 0;
+
+
+        }
+
+
+        .kpi-icon.i-blue { background: var(--blue-dim); color: var(--blue); }
+
+
+        .kpi-icon.i-green { background: var(--green-dim); color: var(--green); }
+
+
+        .kpi-icon.i-red { background: var(--red-dim); color: var(--red); }
+
+
+        .kpi-icon.i-yellow { background: var(--yellow-dim); color: var(--yellow); }
+
+
+        .kpi-icon.i-cyan { background: var(--cyan-dim); color: var(--cyan); }
+
+
+        .kpi-text { overflow: hidden; }
+
+
+        .kpi-lab { font-size: 10px; color: var(--txt-3); text-transform: uppercase; letter-spacing: .6px; font-weight: 600; }
+
+
+        .kpi-val { font-size: 17px; font-weight: 700; white-space: nowrap; }
+
+
+
+
+
+        /* ==================== MAIN LAYOUT ==================== */
+
+
+        .main {
+
+
+            display: grid;
+
+
+            grid-template-columns: 1fr 340px;
+
+
+            gap: 12px;
+
+
+            padding: 12px 16px 16px;
+
+
+            min-height: calc(100vh - 44px - 42px - 80px);
+
+
+        }
+
+
+
+
+
+        /* ==================== CARD ==================== */
+
+
+        .cd {
+
+
+            background: var(--bg-2);
+
+
+            border: 1px solid var(--border);
+
+
+            border-radius: var(--radius);
+
+
+            overflow: hidden;
+
+
+        }
+
+
+        .cd-h {
+
+
+            padding: 10px 14px;
+
+
+            font-size: 11px;
+
+
+            font-weight: 700;
+
+
+            text-transform: uppercase;
+
+
+            letter-spacing: .7px;
+
+
+            color: var(--txt-3);
+
+
+            border-bottom: 1px solid var(--border);
+
+
+            background: var(--bg-1);
+
+
+            display: flex;
+
+
+            align-items: center;
+
+
+            gap: 7px;
+
+
+        }
+
+
+        .cd-h i { color: var(--blue); font-size: 13px; }
+
+
+        .cd-b { padding: 14px; }
+
+
+
+
+
+        /* ==================== LEFT COLUMN ==================== */
+
+
+        .col-l { display: flex; flex-direction: column; gap: 12px; }
+
+
+
+
+
+        /* VIDEO */
+
+
+        .vid-box {
+
+
+            background: #000;
+
+
+            border-radius: 6px;
+
+
+            overflow: hidden;
+
+
+            position: relative;
+
+
+            line-height: 0;
+
+
+        }
+
+
+        .vid-box img { width: 100%; display: block; max-height: 460px; object-fit: contain; }
+
+
+        .vid-overlay {
+
+
+            position: absolute; top: 8px; left: 8px;
+
+
+            display: flex; gap: 5px;
+
+
+        }
+
+
+        .vid-badge {
+
+
+            background: rgba(0,0,0,.75);
+
+
+            backdrop-filter: blur(6px);
+
+
+            color: #fff;
+
+
+            font-size: 10px;
+
+
+            padding: 3px 8px;
+
+
+            border-radius: 4px;
+
+
+            font-weight: 600;
+
+
+            letter-spacing: .3px;
+
+
+        }
+
+
+        .vid-badge.live { border-left: 3px solid var(--red); }
+
+
+        .vid-badge.fps-b { border-left: 3px solid var(--green); }
+
+
+
+
+
+        /* SNAPSHOT */
+
+
+        .snap-box {
+
+
+            background: var(--bg-0);
+
+
+            border-radius: 6px;
+
+
+            min-height: 180px;
+
+
+            display: flex; align-items: center; justify-content: center;
+
+
+            overflow: hidden;
+
+
+            position: relative;
+
+
+        }
+
+
+        .snap-box img { width: 100%; max-height: 340px; object-fit: contain; display: block; }
+
+
+        .snap-empty { color: var(--txt-3); font-size: 12px; text-align: center; padding: 20px; }
+
+
+        .snap-empty i { font-size: 28px; display: block; margin-bottom: 6px; opacity: .4; }
+
+
+        .snap-meta {
+
+
+            display: flex; justify-content: space-between; align-items: center;
+
+
+            padding: 8px 12px;
+
+
+            font-size: 11px; color: var(--txt-3);
+
+
+            border-top: 1px solid var(--border);
+
+
+        }
+
+
+
+
+
+        /* ==================== EVENT LOG ==================== */
+
+
+        .ev-list { max-height: 140px; overflow-y: auto; }
+
+
+        .ev-list::-webkit-scrollbar { width: 3px; }
+
+
+        .ev-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+
+        .ev-item {
+
+
+            display: flex; align-items: flex-start; gap: 8px;
+
+
+            padding: 5px 0; font-size: 12px;
+
+
+            border-bottom: 1px solid rgba(42,50,68,.4);
+
+
+        }
+
+
+        .ev-item:last-child { border-bottom: none; }
+
+
+        .ev-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+
+
+        .ev-time { color: var(--txt-3); font-family: 'JetBrains Mono', 'SF Mono', 'Cascadia Code', monospace; font-size: 11px; white-space: nowrap; }
+
+
+        .ev-msg { flex: 1; color: var(--txt-2); }
+
+
+
+
+
+        /* ==================== RIGHT COLUMN ==================== */
+
+
+        .col-r {
+
+
+            display: flex; flex-direction: column; gap: 12px;
+
+
+            overflow-y: auto; max-height: calc(100vh - 180px);
+
+
+            scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+
+
+        }
+
+
+        .col-r::-webkit-scrollbar { width: 3px; }
+
+
+        .col-r::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+
+
+
+
+        /* STATUS BANNER */
+
+
+        .st-banner {
+
+
+            padding: 18px 16px;
+
+
+            border-radius: var(--radius);
+
+
+            text-align: center;
+
+
+            font-weight: 800;
+
+
+            font-size: 18px;
+
+
+            letter-spacing: 1.5px;
+
+
+            transition: all .3s;
+
+
+            border: 1px solid transparent;
+
+
+        }
+
+
+        .st-banner.st-ok {
+
+
+            background: linear-gradient(135deg, rgba(34,197,94,.18), rgba(34,197,94,.06));
+
+
+            border-color: rgba(34,197,94,.4);
+
+
+            color: var(--green);
+
+
+        }
+
+
+        .st-banner.st-warn {
+
+
+            background: linear-gradient(135deg, rgba(234,179,8,.18), rgba(234,179,8,.06));
+
+
+            border-color: rgba(234,179,8,.4);
+
+
+            color: var(--yellow);
+
+
+        }
+
+
+        .st-banner.st-err {
+
+
+            background: linear-gradient(135deg, rgba(239,68,68,.18), rgba(239,68,68,.06));
+
+
+            border-color: rgba(239,68,68,.5);
+
+
+            color: var(--red);
+
+
+            animation: pulse 2s infinite;
+
+
+        }
+
+
+        @keyframes pulse {
+
+
+            0%,100% { box-shadow: 0 0 0 0 rgba(239,68,68,.25); }
+
+
+            50% { box-shadow: 0 0 12px 2px rgba(239,68,68,.15); }
+
+
+        }
+
+
+        .st-cd {
+
+
+            font-size: 12px; font-weight: 500; margin-top: 6px;
+
+
+            opacity: .8; letter-spacing: 0;
+
+
+        }
+
+
+
+
+
+        /* METRIC ROW */
+
+
+        .m-row {
+
+
+            display: flex; justify-content: space-between; align-items: center;
+
+
+            padding: 7px 0;
+
+
+            border-bottom: 1px solid rgba(42,50,68,.3);
+
+
+        }
+
+
+        .m-row:last-child { border-bottom: none; }
+
+
+        .m-lab { font-size: 12px; color: var(--txt-3); }
+
+
+        .m-val {
+
+
+            font-size: 15px; font-weight: 700;
+
+
+            font-family: 'JetBrains Mono', 'SF Mono', 'Cascadia Code', monospace;
+
+
+        }
+
+
+
+
+
+        /* PROBABILITY BARS */
+
+
+        .pb { margin-bottom: 10px; }
+
+
+        .pb:last-child { margin-bottom: 0; }
+
+
+        .pb-top { display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 4px; }
+
+
+        .pb-lab { color: var(--txt-3); }
+
+
+        .pb-val { font-weight: 700; font-family: monospace; }
+
+
+        .pb-track {
+
+
+            height: 5px; background: var(--bg-0); border-radius: 3px; overflow: hidden;
+
+
+        }
+
+
+        .pb-fill {
+
+
+            height: 100%; border-radius: 3px;
+
+
+            transition: width .4s ease;
+
+
+        }
+
+
+
+
+
+        /* BUTTONS */
+
+
+        .btn-i {
+
+
+            padding: 8px 14px;
+
+
+            border: 1px solid var(--border);
+
+
+            border-radius: 6px;
+
+
+            font-size: 12px; font-weight: 600;
+
+
+            cursor: pointer;
+
+
+            transition: all .15s;
+
+
+            display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+
+
+            outline: none;
+
+
+            font-family: inherit;
+
+
+        }
+
+
+        .btn-i:hover { transform: translateY(-1px); box-shadow: var(--shadow); }
+
+
+        .btn-i:active { transform: translateY(0); }
+
+
+        .btn-i:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+
+        .btn-ok { background: var(--green); color: #fff; border-color: var(--green); }
+
+
+        .btn-ok:hover { background: #16a34a; }
+
+
+        .btn-er { background: var(--red); color: #fff; border-color: var(--red); }
+
+
+        .btn-er:hover { background: #dc2626; }
+
+
+        .btn-bl { background: var(--blue); color: #fff; border-color: var(--blue); }
+
+
+        .btn-bl:hover { background: #2563eb; }
+
+
+        .btn-gh { background: var(--bg-3); color: var(--txt-2); }
+
+
+        .btn-gh:hover { border-color: var(--blue); color: var(--txt-1); }
+
+
+
+
+
+        /* INPUTS */
+
+
+        .inp {
+
+
+            background: var(--bg-0);
+
+
+            border: 1px solid var(--border);
+
+
+            color: var(--txt-1);
+
+
+            padding: 7px 10px;
+
+
+            border-radius: 5px;
+
+
+            font-size: 12px;
+
+
+            font-family: inherit;
+
+
+            transition: border-color .2s;
+
+
+            outline: none;
+
+
+        }
+
+
+        .inp:focus { border-color: var(--blue); box-shadow: 0 0 0 2px rgba(59,130,246,.12); }
+
+
+        .inp-row { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+
+
+        .inp-row:last-child { margin-bottom: 0; }
+
+
+        .inp-row label { font-size: 11px; color: var(--txt-3); min-width: 90px; font-weight: 600; }
+
+
+
+
+
+        /* ==================== CONTROL PAGE LAYOUT ==================== */
+
+
+        .ctrl-grid {
+
+
+            display: grid;
+
+
+            grid-template-columns: 1fr 1fr;
+
+
+            gap: 12px;
+
+
+            padding: 12px 16px 16px;
+
+
+        }
+
+
+
+
+
+        /* ==================== TOAST SYSTEM ==================== */
+
+
+        .toast-wrap {
+
+
+            position: fixed; top: 52px; right: 14px;
+
+
+            z-index: 9999;
+
+
+            display: flex; flex-direction: column; gap: 6px;
+
+
+            pointer-events: none;
+
+
+        }
+
+
+        .toast {
+
+
+            background: var(--bg-2);
+
+
+            border: 1px solid var(--border);
+
+
+            border-radius: 6px;
+
+
+            padding: 10px 14px;
+
+
+            font-size: 12px;
+
+
+            color: var(--txt-1);
+
+
+            box-shadow: 0 4px 12px rgba(0,0,0,.5);
+
+
+            display: flex; align-items: center; gap: 8px;
+
+
+            max-width: 320px;
+
+
+            pointer-events: auto;
+
+
+            animation: tIn .25s ease;
+
+
+        }
+
+
+        .toast.t-ok { border-left: 3px solid var(--green); }
+
+
+        .toast.t-err { border-left: 3px solid var(--red); }
+
+
+        .toast.t-info { border-left: 3px solid var(--blue); }
+
+
+        @keyframes tIn {
+
+
+            from { transform: translateX(100%); opacity: 0; }
+
+
+            to { transform: translateX(0); opacity: 1; }
+
+
+        }
+
+
+
+
+
+        /* ==================== RESPONSIVE ==================== */
+
+
+        @media (max-width: 860px) {
+
+
+            .main { grid-template-columns: 1fr; }
+
+
+            .ctrl-grid { grid-template-columns: 1fr; }
+
+
+            .col-r { max-height: none; overflow-y: visible; }
+
+
+            .kpi-strip { grid-template-columns: repeat(2, 1fr); }
+
+
+        }
+
+
+        @media (max-width: 480px) {
+
+            .hd { padding: 0 10px; height: 40px; }
+
+            .hd-name { font-size: 12px; }
+
+            .hd-tag { display: none; }
+
+            .main { padding: 8px 10px 10px; gap: 8px; }
+
+            .ctrl-grid { padding: 8px 10px 10px; gap: 8px; }
+
+
+            .kpi-strip { padding: 8px 10px 0; gap: 6px; grid-template-columns: 1fr 1fr; }
+
+
+            .kpi { padding: 10px; }
+
+
+            .kpi-icon { width: 32px; height: 32px; font-size: 14px; }
+
+
+            .kpi-val { font-size: 14px; }
+
+            .tab-btn { padding: 8px 14px; font-size: 11px; }
+
+        }
+
+
+
+        /* ==================== INDUSTRIAL DARK REDESIGN ==================== */
+
+        :root {
+
+            --bg-0: #070a0f;
+
+            --bg-1: #0b1119;
+
+            --bg-2: #101821;
+
+            --bg-3: #162231;
+
+            --bg-hover: #1d2c3d;
+
+            --border: rgba(126, 162, 195, .16);
+
+            --border-hl: #18d3ff;
+
+            --txt-1: #edf7ff;
+
+            --txt-2: #a9bccb;
+
+            --txt-3: #6f8798;
+
+            --green: #41f19a;
+
+            --red: #ff4d5e;
+
+            --yellow: #ffd166;
+
+            --blue: #37a7ff;
+
+            --cyan: #1ee4ff;
+
+            --orange: #ff9f43;
+
+            --green-dim: rgba(65, 241, 154, .13);
+
+            --red-dim: rgba(255, 77, 94, .13);
+
+            --yellow-dim: rgba(255, 209, 102, .13);
+
+            --blue-dim: rgba(55, 167, 255, .13);
+
+            --cyan-dim: rgba(30, 228, 255, .12);
+
+            --radius: 8px;
+
+            --shadow: 0 18px 50px rgba(0, 0, 0, .34);
+
+        }
+
+
+
+        body {
+
+            background:
+
+                linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+
+                linear-gradient(90deg, rgba(255,255,255,.022) 1px, transparent 1px),
+
+                radial-gradient(circle at 18% 0%, rgba(30, 228, 255, .11), transparent 34%),
+
+                linear-gradient(135deg, #06090e 0%, #0a1119 47%, #070b10 100%);
+
+            background-size: 32px 32px, 32px 32px, auto, auto;
+
+            font-family: Bahnschrift, "Aptos Narrow", "Segoe UI", sans-serif;
+
+            letter-spacing: 0;
+
+        }
+
+
+
+        body::before {
+
+            content: "";
+
+            position: fixed;
+
+            inset: 0;
+
+            pointer-events: none;
+
+            z-index: -1;
+
+            background:
+
+                repeating-linear-gradient(0deg, rgba(255,255,255,.018) 0 1px, transparent 1px 4px),
+
+                linear-gradient(90deg, rgba(30,228,255,.07), transparent 18%, transparent 82%, rgba(255,209,102,.05));
+
+            opacity: .55;
+
+        }
+
+
+
+        .hd {
+
+            height: 58px;
+
+            padding: 0 22px;
+
+            background: rgba(7, 11, 16, .88);
+
+            border-bottom: 1px solid rgba(30, 228, 255, .22);
+
+            box-shadow: 0 12px 38px rgba(0,0,0,.26);
+
+            backdrop-filter: blur(18px);
+
+        }
+
+
+
+        .hd-logo {
+
+            height: 34px;
+
+            width: 34px;
+
+            padding: 3px;
+
+            background: #0e1721;
+
+            border: 1px solid rgba(30, 228, 255, .28);
+
+            box-shadow: inset 0 0 16px rgba(30, 228, 255, .08);
+
+        }
+
+
+
+        .hd-name {
+
+            font-size: 16px;
+
+            font-weight: 800;
+
+            text-transform: uppercase;
+
+            letter-spacing: .8px;
+
+        }
+
+
+
+        .hd-tag,
+
+        .vid-badge,
+
+        .toast {
+
+            border-radius: 4px;
+
+        }
+
+
+
+        .hd-tag {
+
+            color: var(--cyan);
+
+            background: rgba(30, 228, 255, .08);
+
+            border-color: rgba(30, 228, 255, .22);
+
+        }
+
+
+
+        .hd-ind {
+
+            min-height: 28px;
+
+            padding: 5px 9px;
+
+            border: 1px solid rgba(126,162,195,.12);
+
+            background: rgba(16, 24, 33, .72);
+
+        }
+
+
+
+        .tab-bar {
+
+            padding: 0 22px;
+
+            background: rgba(8, 13, 20, .78);
+
+            border-bottom: 1px solid rgba(126, 162, 195, .13);
+
+            backdrop-filter: blur(14px);
+
+        }
+
+
+
+        .tab-btn {
+
+            padding: 13px 24px;
+
+            color: var(--txt-2);
+
+            letter-spacing: .9px;
+
+        }
+
+
+
+        .tab-btn.active {
+
+            color: var(--cyan);
+
+            background: linear-gradient(180deg, rgba(30,228,255,.09), transparent);
+
+        }
+
+
+
+        .tab-btn.active::after {
+
+            height: 3px;
+
+            background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+
+            box-shadow: 0 0 16px rgba(30, 228, 255, .65);
+
+        }
+
+
+
+        .kpi-strip {
+
+            grid-template-columns: repeat(4, minmax(160px, 1fr));
+
+            gap: 14px;
+
+            padding: 16px 22px 0;
+
+        }
+
+
+
+        .main {
+
+            grid-template-columns: minmax(0, 1.35fr) minmax(340px, .65fr);
+
+            gap: 16px;
+
+            padding: 16px 22px 22px;
+
+        }
+
+
+
+        .ctrl-grid {
+
+            gap: 16px;
+
+            padding: 16px 22px 22px;
+
+        }
+
+
+
+        .cd,
+
+        .kpi {
+
+            position: relative;
+
+            background:
+
+                linear-gradient(180deg, rgba(255,255,255,.045), transparent 42%),
+
+                rgba(12, 19, 27, .88);
+
+            border: 1px solid rgba(126, 162, 195, .16);
+
+            box-shadow: var(--shadow), inset 0 1px 0 rgba(255,255,255,.045);
+
+            backdrop-filter: blur(12px);
+
+        }
+
+
+
+        .cd::before,
+
+        .kpi::before {
+
+            content: "";
+
+            position: absolute;
+
+            inset: 0 auto auto 0;
+
+            width: 3px;
+
+            height: 100%;
+
+            background: linear-gradient(180deg, var(--cyan), transparent 72%);
+
+            opacity: .58;
+
+            pointer-events: none;
+
+        }
+
+
+
+        .cd-h {
+
+            min-height: 42px;
+
+            padding: 12px 15px;
+
+            color: #c4d6e4;
+
+            background: linear-gradient(90deg, rgba(30,228,255,.11), rgba(15,24,34,.78));
+
+            border-bottom: 1px solid rgba(126, 162, 195, .14);
+
+            letter-spacing: .95px;
+
+        }
+
+
+
+        .cd-h i {
+
+            color: var(--cyan);
+
+            filter: drop-shadow(0 0 8px rgba(30,228,255,.4));
+
+        }
+
+
+
+        .cd-b {
+
+            padding: 15px;
+
+        }
+
+
+
+        .kpi {
+
+            min-height: 86px;
+
+            padding: 15px;
+
+        }
+
+
+
+        .kpi-icon {
+
+            width: 44px;
+
+            height: 44px;
+
+            border-radius: 7px;
+
+            border: 1px solid currentColor;
+
+            box-shadow: inset 0 0 22px rgba(255,255,255,.04);
+
+        }
+
+
+
+        .kpi-lab,
+
+        .m-lab,
+
+        .pb-lab,
+
+        .inp-row label {
+
+            color: #7f98aa;
+
+            letter-spacing: .7px;
+
+        }
+
+
+
+        .kpi-val {
+
+            margin-top: 2px;
+
+            font-size: 20px;
+
+            font-weight: 800;
+
+        }
+
+
+
+        .vid-box,
+
+        .snap-box {
+
+            border-radius: 6px;
+
+            border: 1px solid rgba(30, 228, 255, .14);
+
+            background:
+
+                linear-gradient(135deg, rgba(30,228,255,.08), transparent 30%),
+
+                #020407;
+
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,.025);
+
+        }
+
+
+
+        .vid-box img {
+
+            max-height: 560px;
+
+        }
+
+
+
+        .snap-box {
+
+            min-height: 225px;
+
+        }
+
+
+
+        .snap-box img {
+
+            max-height: 420px;
+
+        }
+
+
+
+        .snap-empty {
+
+            color: #6f8798;
+
+            text-transform: uppercase;
+
+            letter-spacing: .65px;
+
+        }
+
+
+
+        .snap-meta {
+
+            background: rgba(7, 11, 16, .62);
+
+        }
+
+
+
+        .st-banner {
+
+            border-radius: 7px;
+
+            min-height: 92px;
+
+            display: flex;
+
+            flex-direction: column;
+
+            justify-content: center;
+
+            text-transform: uppercase;
+
+            letter-spacing: 1.8px;
+
+            box-shadow: var(--shadow), inset 0 1px 0 rgba(255,255,255,.05);
+
+        }
+
+
+
+        .st-banner.st-ok {
+
+            background: linear-gradient(135deg, rgba(65,241,154,.2), rgba(12,19,27,.9) 60%);
+
+            border-color: rgba(65,241,154,.36);
+
+        }
+
+
+
+        .st-banner.st-warn {
+
+            background: linear-gradient(135deg, rgba(255,209,102,.22), rgba(12,19,27,.9) 60%);
+
+            border-color: rgba(255,209,102,.36);
+
+        }
+
+
+
+        .st-banner.st-err {
+
+            background: linear-gradient(135deg, rgba(255,77,94,.24), rgba(12,19,27,.9) 60%);
+
+            border-color: rgba(255,77,94,.42);
+
+        }
+
+
+
+        .m-row {
+
+            min-height: 36px;
+
+            border-bottom: 1px solid rgba(126, 162, 195, .1);
+
+        }
+
+
+
+        .m-val,
+
+        .pb-val,
+
+        .ev-time {
+
+            font-family: "JetBrains Mono", "Cascadia Code", Consolas, monospace;
+
+        }
+
+
+
+        .pb-track {
+
+            height: 9px;
+
+            border: 1px solid rgba(126, 162, 195, .12);
+
+            background: #060a10;
+
+        }
+
+
+
+        .pb-fill {
+
+            box-shadow: 0 0 16px currentColor;
+
+        }
+
+
+
+        .inp {
+
+            min-height: 36px;
+
+            background: #070b11;
+
+            border-color: rgba(126, 162, 195, .2);
+
+        }
+
+
+
+        .inp:focus {
+
+            border-color: var(--cyan);
+
+            box-shadow: 0 0 0 3px rgba(30, 228, 255, .11);
+
+        }
+
+
+
+        .btn-i {
+
+            min-height: 36px;
+
+            border-radius: 5px;
+
+            font-weight: 800;
+
+            text-transform: uppercase;
+
+            letter-spacing: .45px;
+
+            box-shadow: inset 0 1px 0 rgba(255,255,255,.1);
+
+        }
+
+
+
+        .btn-bl {
+
+            background: linear-gradient(180deg, #21b8ff, #1375c8);
+
+            border-color: rgba(55,167,255,.7);
+
+        }
+
+
+
+        .btn-ok {
+
+            background: linear-gradient(180deg, #42e994, #14945b);
+
+            border-color: rgba(65,241,154,.65);
+
+            color: #04110b;
+
+        }
+
+
+
+        .btn-er {
+
+            background: linear-gradient(180deg, #ff6876, #c72538);
+
+            border-color: rgba(255,77,94,.7);
+
+        }
+
+
+
+        .btn-gh {
+
+            background: linear-gradient(180deg, #182738, #101821);
+
+        }
+
+
+
+        .ev-list {
+
+            max-height: 190px;
+
+        }
+
+
+
+        .ev-item {
+
+            padding: 8px 0;
+
+            border-bottom-color: rgba(126, 162, 195, .1);
+
+        }
+
+
+
+        .toast {
+
+            background: rgba(12, 19, 27, .96);
+
+            border-color: rgba(126, 162, 195, .18);
+
+            backdrop-filter: blur(14px);
+
+        }
+
+
+
+        @media (max-width: 1080px) {
+
+            .kpi-strip { grid-template-columns: repeat(2, minmax(160px, 1fr)); }
+
+            .main { grid-template-columns: 1fr; }
+
+            .col-r { max-height: none; overflow-y: visible; }
+
+        }
+
+
+
+        @media (max-width: 560px) {
+
+            .hd { height: auto; min-height: 54px; padding: 9px 12px; align-items: flex-start; gap: 8px; }
+
+            .hd-left, .hd-right { flex-wrap: wrap; }
+
+            .hd-right { justify-content: flex-end; gap: 6px; }
+
+            .tab-bar { padding: 0 10px; }
+
+            .kpi-strip { grid-template-columns: 1fr; padding: 12px 10px 0; }
+
+            .main, .ctrl-grid { padding: 12px 10px 16px; }
+
+            .snap-box { min-height: 180px; }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+
+
+
+<!-- TOASTS -->
+
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+
+
+
+
+<!-- HEADER -->
+
+
+<header class="hd">
+
+
+    <div class="hd-left">
+
+
+        <img src="/static/ctut.webp" class="hd-logo" alt="" onerror="this.style.display='none'">
+
+
+        <span class="hd-name">Solar Panel Cleaning System</span>
+
+
+        <span class="hd-tag">v2.5</span>
+
+
+    </div>
+    <div class="hd-right">
+        <div class="hd-ind">
+            <span class="led led-r" id="wsLed"></span>
+            <span id="wsTxt">Connecting…</span>
+        </div>
+        <div class="hd-ind">
+            <i class="bi bi-clock" style="font-size:12px"></i>
+            <span id="clock">--:--:--</span>
+        </div>
+        <a href="/logout" class="hd-link" style="color:var(--red)"><i class="bi bi-box-arrow-right"></i> Logout</a>
+    </div>
+</header>
+
+<!-- TAB NAVIGATION -->
+<div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('monitor')" id="tabMonitor"><i class="bi bi-display"></i> Monitor</button>
+    <button class="tab-btn" onclick="switchTab('control')" id="tabControl"><i class="bi bi-sliders"></i> Control</button>
+    <button class="tab-btn" onclick="switchTab('power')" id="tabPower"><i class="bi bi-lightning-charge-fill"></i> Power</button>
+</div>
+
+<!-- ==================== TAB 1: MONITOR ==================== -->
+<div class="tab-page active" id="pageMonitor">
+    <div class="kpi-strip">
+        <div class="kpi"><div class="kpi-icon i-blue"><i class="bi bi-eye"></i></div><div class="kpi-text"><div class="kpi-lab">Detection</div><div class="kpi-val" id="kLabel">—</div></div></div>
+        <div class="kpi"><div class="kpi-icon i-green" id="kPlcIco"><i class="bi bi-cpu"></i></div><div class="kpi-text"><div class="kpi-lab">PLC</div><div class="kpi-val" id="kPlc">Offline</div></div></div>
+        <div class="kpi"><div class="kpi-icon i-cyan"><i class="bi bi-speedometer"></i></div><div class="kpi-text"><div class="kpi-lab">Frame Rate</div><div class="kpi-val"><span id="kFps">0</span> <small style="font-size:11px;font-weight:400;color:var(--txt-3)">fps</small></div></div></div>
+        <div class="kpi"><div class="kpi-icon i-yellow"><i class="bi bi-tools"></i></div><div class="kpi-text"><div class="kpi-lab">Cleaning</div><div class="kpi-val" id="kClean">0</div></div></div>
+    </div>
+    <div class="main">
+        <div class="col-l">
+            <div class="cd"><div class="cd-h"><i class="bi bi-camera-video-fill"></i> Live Camera</div><div class="vid-box"><img src="/video_feed" alt="Camera" id="vidFeed"><div class="vid-overlay"><span class="vid-badge live"><i class="bi bi-record-circle"></i> LIVE</span><span class="vid-badge fps-b" id="fpsOvl">0 fps</span></div></div></div>
+            <div class="cd"><div class="cd-h"><i class="bi bi-image"></i> Last AI Snapshot</div><div class="snap-box" id="snapBox"><img src="" id="snapImg" style="display:none" onerror="this.style.display='none'"><div class="snap-empty" id="snapEmpty"><i class="bi bi-hourglass-split"></i> Waiting for first AI snapshot…</div></div><div class="snap-meta"><span id="snapTime"><i class="bi bi-clock"></i> —</span><span id="snapConf"></span></div></div>
+            <div class="cd"><div class="cd-h"><i class="bi bi-grid-3x3-gap-fill"></i> CNN 32 Patch Analysis</div><div class="snap-box"><img src="" id="cnnPatchImg" style="display:none" onerror="this.style.display='none'"><div class="snap-empty" id="cnnPatchEmpty"><i class="bi bi-grid-3x3-gap"></i> Waiting for CNN patch grid...</div></div></div>
+            <div class="cd"><div class="cd-h"><i class="bi bi-bounding-box"></i> YOLO Panel Detection</div><div class="snap-box"><img src="" id="yoloPanelImg" style="display:none" onerror="this.style.display='none'"><div class="snap-empty" id="yoloPanelEmpty"><i class="bi bi-bounding-box"></i> Waiting for YOLO / Panel-Seg image...</div></div></div>
+            <div class="cd"><div class="cd-h"><i class="bi bi-bell-fill"></i> Event Log</div><div class="cd-b"><div class="ev-list" id="evList"></div></div></div>
+        </div>
+        <div class="col-r">
+            <div class="st-banner st-ok" id="banner"><div id="bannerTxt">READY</div><div class="st-cd" id="bannerCd"></div></div>
+            <div class="cd"><div class="cd-h"><i class="bi bi-robot"></i> AI Detection</div><div class="cd-b"><div class="m-row"><span class="m-lab">Classification</span><span class="m-val" id="aiLabel" style="color:var(--blue)">—</span></div><div class="m-row"><span class="m-lab">Confidence</span><span class="m-val" id="aiConf" style="color:var(--green)">0%</span></div><div class="m-row"><span class="m-lab">Dirty Patch Ratio</span><span class="m-val" id="aiArea" style="color:var(--cyan)">0%</span></div></div></div>
+            <div class="cd"><div class="cd-h"><i class="bi bi-bar-chart-fill"></i> CNN Class Probabilities</div><div class="cd-b"><div class="pb"><div class="pb-top"><span class="pb-lab">ban <span style="color:var(--txt-3);font-size:10px">(dirty)</span></span><span class="pb-val" id="pBanV">0%</span></div><div class="pb-track"><div class="pb-fill" id="pBan" style="width:0%;background:var(--red)"></div></div></div><div class="pb"><div class="pb-top"><span class="pb-lab">sach <span style="color:var(--txt-3);font-size:10px">(clean)</span></span><span class="pb-val" id="pSachV">0%</span></div><div class="pb-track"><div class="pb-fill" id="pSach" style="width:0%;background:var(--green)"></div></div></div><div style="font-size:11px;color:var(--txt-3);margin-top:8px" id="cnnMeta">CNN: 2 classes (sach, ban)</div></div></div>
+            <div class="cd"><div class="cd-h"><i class="bi bi-bounding-box"></i> YOLO / Panel-Seg</div><div class="cd-b"><div class="m-row"><span class="m-lab">Panel</span><span class="m-val" id="panelState" style="color:var(--cyan)">—</span></div><div class="m-row"><span class="m-lab">Objects</span><span class="m-val" id="yoloObjects" style="color:var(--orange)">—</span></div><div class="m-row"><span class="m-lab">Crack</span><span class="m-val" id="yoloCrack" style="color:var(--red)">—</span></div></div></div>
+            <div class="cd"><div class="cd-h"><i class="bi bi-info-circle"></i> Current Config</div><div class="cd-b"><div class="m-row"><span class="m-lab">AI Interval</span><span class="m-val" id="monInterval" style="color:var(--cyan)">10 min</span></div><div class="m-row"><span class="m-lab">Patch Threshold</span><span class="m-val" id="monThreshold" style="color:var(--orange)">0%</span></div><div class="m-row"><span class="m-lab">CNN Threshold</span><span class="m-val" id="monCnnThreshold" style="color:var(--green)">65%</span></div><div class="m-row"><span class="m-lab">Camera</span><span class="m-val" id="monCamera" style="color:var(--txt-1)">0</span></div><div class="m-row"><span class="m-lab">PLC IP</span><span class="m-val" id="monPlcIp" style="color:var(--txt-2);font-size:12px">192.168.1.1</span></div></div></div>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== TAB 2: CONTROL ==================== -->
+<div class="tab-page" id="pageControl">
+    <div class="ctrl-grid">
+        <div class="cd"><div class="cd-h"><i class="bi bi-power"></i> System Control</div><div class="cd-b"><div class="m-row"><span class="m-lab">System Status</span><span id="sysState" style="font-size:14px;font-weight:700;color:var(--red)">Stopped</span></div><div style="display:flex;gap:8px;margin-top:14px"><button class="btn-i btn-ok" onclick="sysStart()" id="btnStart" style="flex:1;padding:12px 14px;font-size:14px"><i class="bi bi-play-fill"></i> Start</button><button class="btn-i btn-er" onclick="sysStop()" id="btnStop" style="flex:1;padding:12px 14px;font-size:14px"><i class="bi bi-stop-fill"></i> Stop</button></div></div></div>
+        <div class="cd"><div class="cd-h"><i class="bi bi-toggles"></i> PLC Control</div><div class="cd-b"><div class="m-row"><span class="m-lab">Connection</span><span id="plcDet" style="font-size:12px;color:var(--red);font-weight:600">Disconnected</span></div><div style="display:flex;gap:8px;margin-top:14px"><button class="btn-i btn-bl" onclick="plcReconnect()" id="btnReconn" style="flex:1"><i class="bi bi-arrow-repeat"></i> Reconnect</button><button class="btn-i btn-ok" onclick="manualClean()" id="btnClean" style="flex:1"><i class="bi bi-lightning-fill"></i> Manual Clean</button></div></div></div>
+        <div class="cd"><div class="cd-h"><i class="bi bi-stopwatch"></i> Snapshot Schedule</div><div class="cd-b"><div class="inp-row"><label>AI Interval</label><input type="number" class="inp" id="intInput" min="1" max="1440" value="10" style="width:80px;text-align:center;font-size:14px;font-weight:700"><span style="color:var(--txt-3);font-size:12px;font-weight:600">min</span><button class="btn-i btn-bl" onclick="setInterval_()" style="padding:7px 14px"><i class="bi bi-check-lg"></i> Apply</button></div><div style="font-size:11px;color:var(--txt-3);margin-top:6px" id="intInfo">AI runs every 10 min</div></div></div>
+        <div class="cd"><div class="cd-h"><i class="bi bi-moisture"></i> Patch Threshold</div><div class="cd-b"><div class="inp-row"><label>Threshold</label><input type="number" class="inp" id="cfgThr" min="0" max="100" step="1" value="0" style="width:80px;font-size:14px;font-weight:700;text-align:center"><span style="color:var(--txt-3);font-size:12px;font-weight:600">%</span><button class="btn-i btn-bl" onclick="saveDirtThr()" style="padding:7px 14px"><i class="bi bi-check-lg"></i> Apply</button></div><div style="font-size:11px;color:var(--txt-3);margin-top:6px" id="thrInfo">Clean when dirty patch ratio &ge; 0%</div></div></div>
+        <div class="cd"><div class="cd-h"><i class="bi bi-robot"></i> CNN Class Threshold</div><div class="cd-b"><div class="inp-row"><label>Threshold</label><input type="number" class="inp" id="cfgCnnThr" min="0" max="100" step="1" value="65" style="width:80px;font-size:14px;font-weight:700;text-align:center"><span style="color:var(--txt-3);font-size:12px;font-weight:600">%</span><button class="btn-i btn-bl" onclick="saveCnnThr()" style="padding:7px 14px"><i class="bi bi-check-lg"></i> Apply</button></div><div style="font-size:11px;color:var(--txt-3);margin-top:6px" id="cnnThrInfo">CNN decision threshold: 65%</div></div></div>
+        <div class="cd"><div class="cd-h"><i class="bi bi-gear-fill"></i> Configuration</div><div class="cd-b"><div class="inp-row"><label>PLC IP</label><input type="text" class="inp" id="cfgIp" value="192.168.1.11" style="flex:1;font-size:13px"></div><div class="inp-row"><label>Camera ID</label><input type="number" class="inp" id="cfgCam" value="0" min="0" max="9" style="width:64px;font-size:13px"></div><button class="btn-i btn-gh" onclick="saveSettings()" style="width:100%;margin-top:8px;padding:10px"><i class="bi bi-save"></i> Save Settings</button></div></div>
+        
+        <!-- ZALO BOT & SMART ALERTS CARD -->
+        <div class="cd" style="grid-column: 1 / -1;">
+            <div class="cd-h" style="display:flex; justify-content:space-between; align-items:center;">
+                <span><i class="bi bi-chat-dots-fill" style="color:var(--cyan)"></i> ZALO BOT & CẢNH BÁO THÔNG MINH AI (OLLAMA)</span>
+                <span id="zaloBotStatusBadge" style="font-size:11px; padding:3px 8px; border-radius:4px; background:var(--green-dim); color:var(--green); font-weight:700;">Đang kiểm tra...</span>
+            </div>
+            <div class="cd-b">
+                <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:18px;">
+                    <div>
+                        <div class="inp-row">
+                            <label style="min-width:110px">Zalo Token</label>
+                            <input type="password" class="inp" id="cfgZaloToken" value="" placeholder="Token bot Zalo..." style="flex:1;font-size:12px;font-family:monospace">
+                            <button class="btn-i btn-gh" onclick="toggleZaloTokenVisibility()" title="Ẩn/Hiện Token" style="padding:6px 10px"><i class="bi bi-eye" id="zaloTokenEye"></i></button>
+                        </div>
+                        <div class="inp-row" style="margin-top:10px">
+                            <label style="min-width:110px">Admin Chat IDs</label>
+                            <input type="text" class="inp" id="cfgZaloChatIds" value="" placeholder="Ví dụ: 12345678, 87654321" style="flex:1;font-size:12px">
+                        </div>
+                        <div style="font-size:11px; color:var(--txt-3); margin-top:8px; line-height:1.6;">
+                            💡 <strong>Cách lấy Chat ID tự động:</strong> Bạn chỉ cần mở Zalo, tìm Bot <strong>Bot Solar Clean</strong> và nhắn lệnh <code>/start</code> hoặc nhắn bất kỳ tin gì, hệ thống sẽ tự động lưu Chat ID của bạn để gửi cảnh báo!
+                        </div>
+                    </div>
+                    <div>
+                        <div style="display:flex; flex-direction:column; gap:8px;">
+                            <label style="display:flex; align-items:center; gap:8px; cursor:pointer; color:var(--txt-2);">
+                                <input type="checkbox" id="cfgZaloEnabled" checked style="accent-color:var(--cyan); width:16px; height:16px;">
+                                <span>Bật Toàn Bộ Hệ Thống Zalo Bot & Cảnh Báo</span>
+                            </label>
+                            <label style="display:flex; align-items:center; gap:8px; cursor:pointer; color:var(--txt-2);">
+                                <input type="checkbox" id="cfgZaloAlertDirt" checked style="accent-color:var(--cyan); width:16px; height:16px;">
+                                <span>🚨 Cảnh báo khi phát hiện Bụi bẩn (CNN &ge; Ngưỡng)</span>
+                            </label>
+                            <label style="display:flex; align-items:center; gap:8px; cursor:pointer; color:var(--txt-2);">
+                                <input type="checkbox" id="cfgZaloAlertDebris" checked style="accent-color:var(--cyan); width:16px; height:16px;">
+                                <span>🍂 Cảnh báo khi phát hiện Lá cây, Phân chim (YOLOv8)</span>
+                            </label>
+                            <label style="display:flex; align-items:center; gap:8px; cursor:pointer; color:var(--txt-2);">
+                                <input type="checkbox" id="cfgZaloAlertCrack" checked style="accent-color:var(--cyan); width:16px; height:16px;">
+                                <span>⚡ Cảnh báo khẩn cấp khi phát hiện Nứt vỡ tấm pin</span>
+                            </label>
+                        </div>
+                        <div style="display:flex; gap:8px; margin-top:14px;">
+                            <button class="btn-i btn-bl" onclick="saveZaloConfig()" style="flex:1; padding:9px;"><i class="bi bi-save"></i> Lưu Cấu Hình</button>
+                            <button class="btn-i btn-ok" onclick="testZaloAlert()" style="flex:1; padding:9px;"><i class="bi bi-send-fill"></i> Gửi Tin Test</button>
+                            <button class="btn-i btn-gh" onclick="restartZaloBot()" title="Khởi động lại Bot" style="padding:9px 12px;"><i class="bi bi-arrow-clockwise"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== TAB 3: POWER ==================== -->
+<div class="tab-page" id="pagePower">
+    <div class="kpi-strip">
+        <div class="kpi"><div class="kpi-icon i-cyan"><i class="bi bi-lightning-charge"></i></div><div class="kpi-text"><div class="kpi-lab">VOLTAGE (DC)</div><div class="kpi-val" id="pwrVolt">0.00 <small style="font-size:11px;color:var(--txt-3)">V</small></div></div></div>
+        <div class="kpi"><div class="kpi-icon i-green"><i class="bi bi-activity"></i></div><div class="kpi-text"><div class="kpi-lab">CURRENT (DC)</div><div class="kpi-val" id="pwrAmp">0.000 <small style="font-size:11px;color:var(--txt-3)">A</small></div></div></div>
+        <div class="kpi"><div class="kpi-icon i-yellow"><i class="bi bi-speedometer2"></i></div><div class="kpi-text"><div class="kpi-lab">POWER</div><div class="kpi-val" id="pwrWatt">0.0 <small style="font-size:11px;color:var(--txt-3)">W</small></div></div></div>
+        <div class="kpi"><div class="kpi-icon i-blue"><i class="bi bi-battery-charging"></i></div><div class="kpi-text"><div class="kpi-lab">ENERGY</div><div class="kpi-val" id="pwrKwh">0.000 <small style="font-size:11px;color:var(--txt-3)">kWh</small></div></div></div>
+    </div>
+    <div class="main" style="grid-template-columns:1fr 380px">
+        <div class="col-l">
+            <div class="cd">
+                <div class="cd-h" style="display:flex; justify-content:space-between; align-items:center;">
+                    <span><i class="bi bi-graph-up"></i> BIEU DO DO CONG SUAT</span>
+                    <div style="display:flex; gap:6px; align-items:center;">
+                        <div class="btn-group" style="display:flex; background:var(--bg-3); border-radius:4px; padding:2px; border:1px solid var(--border);">
+                            <button class="chart-tab active" onclick="setChartResolution('realtime', this)" style="background:var(--border-hl); border:0; color:#fff; font-size:11px; padding:3px 8px; border-radius:3px; cursor:pointer; font-weight:600;">Real-time</button>
+                            <button class="chart-tab" onclick="setChartResolution('hourly', this)" style="background:transparent; border:0; color:var(--txt-2); font-size:11px; padding:3px 8px; border-radius:3px; cursor:pointer; font-weight:600;">Gio</button>
+                            <button class="chart-tab" onclick="setChartResolution('daily', this)" style="background:transparent; border:0; color:var(--txt-2); font-size:11px; padding:3px 8px; border-radius:3px; cursor:pointer; font-weight:600;">Ngay</button>
+                            <button class="chart-tab" onclick="setChartResolution('monthly', this)" style="background:transparent; border:0; color:var(--txt-2); font-size:11px; padding:3px 8px; border-radius:3px; cursor:pointer; font-weight:600;">Thang</button>
+                        </div>
+                        <a href="/api/power/export" class="btn-i btn-gh" style="font-size:11px; padding:4px 8px; text-decoration:none;"><i class="bi bi-file-earmark-excel"></i> Excel</a>
+                        <a href="/api/power/export-json" class="btn-i btn-gh" style="font-size:11px; padding:4px 8px; text-decoration:none;"><i class="bi bi-filetype-json"></i> JSON</a>
+                        <button class="btn-i btn-bl" onclick="downloadChartPNG()" style="font-size:11px; padding:4px 8px; border:0; cursor:pointer;"><i class="bi bi-image"></i> Tai anh</button>
+                    </div>
+                </div>
+                <div class="cd-b" style="padding:8px">
+                    <canvas id="pwrChart" height="220"></canvas>
+                </div>
+            </div>
+            <div class="cd"><div class="cd-h"><i class="bi bi-bar-chart-line"></i> SO SANH TRUOC / SAU VE SINH</div><div class="cd-b"><div style="display:flex;align-items:center;gap:20px;justify-content:center;padding:10px 0"><div style="text-align:center"><div style="font-size:10px;color:var(--txt-3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px">Truoc</div><div id="effPre" style="font-size:26px;font-weight:800;color:var(--red);font-family:Consolas,monospace">-- W</div></div><div style="font-size:24px;color:var(--txt-3)">→</div><div style="text-align:center"><div style="font-size:10px;color:var(--txt-3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px">Sau</div><div id="effPost" style="font-size:26px;font-weight:800;color:var(--green);font-family:Consolas,monospace">-- W</div></div><div style="border-left:1px solid var(--border);height:50px;margin:0 8px"></div><div style="text-align:center"><div style="font-size:10px;color:var(--txt-3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px">Cai thien</div><div id="effDelta" style="font-size:26px;font-weight:800;color:var(--yellow);font-family:Consolas,monospace">-- %</div></div></div></div></div>
+            <div class="cd"><div class="cd-h"><i class="bi bi-calendar3"></i> NANG LUONG HANG NGAY (kWh)</div><div class="cd-b" style="padding:8px"><canvas id="dailyChart" height="160"></canvas></div></div>
+        </div>
+        <div class="col-r">
+            <div class="cd" style="flex:1"><div class="cd-h"><i class="bi bi-clock-history"></i> LICH SU VE SINH</div><div class="cd-b" style="padding:0"><div style="max-height:500px;overflow-y:auto" id="cleanHistList"><div style="text-align:center;padding:30px;color:var(--txt-3);font-size:12px"><i class="bi bi-hourglass" style="font-size:24px;display:block;margin-bottom:8px;opacity:.4"></i>Chua co du lieu ve sinh</div></div></div></div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<script>
+/* ==================== TAB SWITCHING ==================== */
+function switchTab(tab) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-page').forEach(p => p.classList.remove('active'));
+    const name = tab.charAt(0).toUpperCase() + tab.slice(1);
+    document.getElementById('tab' + name).classList.add('active');
+    document.getElementById('page' + name).classList.add('active');
+    if (tab === 'power') { initPowerCharts(); loadCleanHistory(); loadDailyStats(); }
+    if (tab === 'control') { loadZaloConfig(); }
+}
+
+/* ==================== ZALO BOT & ALERTS MANAGEMENT ==================== */
+function loadZaloConfig() {
+    fetch('/api/zalo/config').then(r => r.json()).then(d => {
+        if (d.success && d.config) {
+            const cfg = d.config;
+            if (document.getElementById('cfgZaloToken')) document.getElementById('cfgZaloToken').value = cfg.bot_token || '';
+            if (document.getElementById('cfgZaloChatIds')) document.getElementById('cfgZaloChatIds').value = (cfg.admin_chat_ids || []).join(', ');
+            if (document.getElementById('cfgZaloEnabled')) document.getElementById('cfgZaloEnabled').checked = cfg.enabled !== false;
+            if (document.getElementById('cfgZaloAlertDirt')) document.getElementById('cfgZaloAlertDirt').checked = cfg.alert_on_dirt !== false;
+            if (document.getElementById('cfgZaloAlertDebris')) document.getElementById('cfgZaloAlertDebris').checked = cfg.alert_on_debris !== false;
+            if (document.getElementById('cfgZaloAlertCrack')) document.getElementById('cfgZaloAlertCrack').checked = cfg.alert_on_crack !== false;
+        }
+    }).catch(()=>{});
+
+    fetch('/api/zalo/status').then(r => r.json()).then(d => {
+        const badge = document.getElementById('zaloBotStatusBadge');
+        if (!badge) return;
+        if (d.success && d.data) {
+            const st = d.data;
+            if (st.running) {
+                badge.textContent = `🟢 Online (${st.bot_name || 'Bot Solar Clean'})`;
+                badge.style.background = 'var(--green-dim)';
+                badge.style.color = 'var(--green)';
+            } else if (!st.enabled) {
+                badge.textContent = '⚪ Đang Tắt';
+                badge.style.background = 'rgba(100,116,139,.2)';
+                badge.style.color = 'var(--txt-3)';
+            } else {
+                badge.textContent = '🔴 Offline';
+                badge.style.background = 'var(--red-dim)';
+                badge.style.color = 'var(--red)';
+            }
+        }
+    }).catch(()=>{});
+}
+
+function saveZaloConfig() {
+    const token = (document.getElementById('cfgZaloToken') ? document.getElementById('cfgZaloToken').value : '').trim();
+    const chatIdsRaw = (document.getElementById('cfgZaloChatIds') ? document.getElementById('cfgZaloChatIds').value : '').trim();
+    const admin_chat_ids = chatIdsRaw ? chatIdsRaw.split(',').map(s => s.trim()).filter(s => s.length > 0) : [];
+    
+    const payload = {
+        bot_token: token,
+        admin_chat_ids: admin_chat_ids,
+        enabled: document.getElementById('cfgZaloEnabled') ? document.getElementById('cfgZaloEnabled').checked : true,
+        alert_on_dirt: document.getElementById('cfgZaloAlertDirt') ? document.getElementById('cfgZaloAlertDirt').checked : true,
+        alert_on_debris: document.getElementById('cfgZaloAlertDebris') ? document.getElementById('cfgZaloAlertDebris').checked : true,
+        alert_on_crack: document.getElementById('cfgZaloAlertCrack') ? document.getElementById('cfgZaloAlertCrack').checked : true
+    };
+
+    apiPost('/api/zalo/config', payload).then(d => {
+        if (d.success) {
+            toast('Đã lưu cấu hình Zalo Bot thành công!', 'success');
+            addEvent('Cập nhật cấu hình Zalo Bot', 'info');
+            loadZaloConfig();
+        } else {
+            toast(d.message || 'Lỗi lưu cấu hình Zalo', 'error');
+        }
+    }).catch(e => toast(e.message, 'error'));
+}
+
+function testZaloAlert() {
+    toast('Đang gửi tin nhắn cảnh báo thử nghiệm Zalo...', 'info');
+    apiPost('/api/zalo/test_alert', {}).then(d => {
+        if (d.success) {
+            toast(d.message, 'success');
+            addEvent('Gửi cảnh báo thử nghiệm Zalo', 'info');
+        } else {
+            toast(d.message || 'Lỗi gửi tin thử nghiệm', 'error');
+        }
+    }).catch(e => toast(e.message, 'error'));
+}
+
+function restartZaloBot() {
+    toast('Đang khởi động lại Zalo Bot...', 'info');
+    apiPost('/api/zalo/restart', {}).then(d => {
+        if (d.success) {
+            toast(d.message, 'success');
+            setTimeout(loadZaloConfig, 1500);
+        } else {
+            toast(d.message || 'Lỗi khởi động lại Bot', 'error');
+        }
+    }).catch(e => toast(e.message, 'error'));
+}
+
+function toggleZaloTokenVisibility() {
+    const inp = document.getElementById('cfgZaloToken');
+    const eye = document.getElementById('zaloTokenEye');
+    if (!inp) return;
+    if (inp.type === 'password') {
+        inp.type = 'text';
+        if (eye) eye.className = 'bi bi-eye-slash';
+    } else {
+        inp.type = 'password';
+        if (eye) eye.className = 'bi bi-eye';
+    }
+}
+
+// Tự động tải cấu hình Zalo khi mở trang
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(loadZaloConfig, 1000);
+});
+
+/* ==================== POWER CHARTS ==================== */
+
+let pwrChart=null, dailyChart=null, _pwrInited=false;
+let currentResolution = 'realtime';
+const realtimeLabels = [];
+const realtimeData = [];
+const pwrData={labels:realtimeLabels,datasets:[{label:'Power (W)',data:realtimeData,borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,.15)',fill:true,tension:.3,pointRadius:0,borderWidth:2}]};
+
+function initPowerCharts(){
+    if(_pwrInited)return; _pwrInited=true;
+    const c1=document.getElementById('pwrChart');
+    if(c1) pwrChart=new Chart(c1,{type:'line',data:pwrData,options:{responsive:true,maintainAspectRatio:false,scales:{x:{display:true,ticks:{color:'#64748b',maxTicksLimit:8,font:{size:9}},grid:{color:'rgba(126,162,195,.1)'}},y:{ticks:{color:'#64748b',font:{size:10}},grid:{color:'rgba(126,162,195,.1)'}}},plugins:{legend:{display:false}},animation:{duration:300}}});
+    const c2=document.getElementById('dailyChart');
+    if(c2) dailyChart=new Chart(c2,{type:'bar',data:{labels:[],datasets:[{label:'kWh',data:[],backgroundColor:'rgba(59,130,246,.6)',borderColor:'#3b82f6',borderWidth:1,borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{ticks:{color:'#64748b',font:{size:10}},grid:{color:'rgba(126,162,195,.1)'}},y:{ticks:{color:'#64748b',font:{size:10}},grid:{color:'rgba(126,162,195,.1)'}}},plugins:{legend:{display:false}}}});
+}
+
+function setChartResolution(res, btn) {
+    document.querySelectorAll('.chart-tab').forEach(b => {
+        b.classList.remove('active');
+        b.style.background = 'transparent';
+        b.style.color = 'var(--txt-2)';
+    });
+    btn.classList.add('active');
+    btn.style.background = 'var(--border-hl)';
+    btn.style.color = '#fff';
+    
+    currentResolution = res;
+    loadHistoricalChartData();
+}
+
+function loadHistoricalChartData() {
+    if (!pwrChart) return;
+    
+    if (currentResolution === 'realtime') {
+        pwrChart.config.type = 'line';
+        pwrChart.config.data.labels = realtimeLabels;
+        pwrChart.config.data.datasets[0].data = realtimeData;
+        pwrChart.config.data.datasets[0].label = 'Power (W)';
+        pwrChart.config.data.datasets[0].borderColor = '#f59e0b';
+        pwrChart.config.data.datasets[0].backgroundColor = 'rgba(245,158,11,.15)';
+        pwrChart.config.data.datasets[0].fill = true;
+        pwrChart.update();
+        return;
+    }
+    
+    let url = '';
+    if (currentResolution === 'hourly') {
+        url = '/api/power/hourly';
+    } else if (currentResolution === 'daily') {
+        url = '/api/power/daily?days=30';
+    } else if (currentResolution === 'monthly') {
+        url = '/api/power/monthly';
+    }
+    
+    fetch(url).then(r => r.json()).then(d => {
+        let labels = [];
+        let data = [];
+        let label = '';
+        let type = 'bar';
+        let color = '#3b82f6';
+        let bgColor = 'rgba(59,130,246,.2)';
+        
+        if (currentResolution === 'hourly' && d.hourly) {
+            labels = d.hourly.map(r => r.hour + 'h');
+            data = d.hourly.map(r => r.avg_power);
+            label = 'Avg Power (W)';
+            type = 'line';
+            color = '#06b6d4';
+            bgColor = 'rgba(6,182,212,.15)';
+        } else if (currentResolution === 'daily' && d.daily) {
+            labels = d.daily.map(r => r.date.slice(5));
+            data = d.daily.map(r => r.total_energy);
+            label = 'Energy (kWh)';
+            type = 'line';
+            color = '#3b82f6';
+            bgColor = 'rgba(59,130,246,.15)';
+        } else if (currentResolution === 'monthly' && d.monthly) {
+            labels = d.monthly.map(r => 'Th.' + r.month);
+            data = d.monthly.map(r => r.total_energy);
+            label = 'Energy (kWh)';
+            type = 'line';
+            color = '#22c55e';
+            bgColor = 'rgba(34,197,94,.15)';
+        }
+        
+        pwrChart.config.type = type;
+        pwrChart.config.data.labels = labels;
+        pwrChart.config.data.datasets[0].data = data;
+        pwrChart.config.data.datasets[0].label = label;
+        pwrChart.config.data.datasets[0].borderColor = color;
+        pwrChart.config.data.datasets[0].backgroundColor = bgColor;
+        pwrChart.config.data.datasets[0].fill = true;
+        pwrChart.update();
+    }).catch(err => console.error("Error loading historical data:", err));
+}
+
+function downloadChartPNG() {
+    if (!pwrChart) return;
+    const imageURI = pwrChart.toBase64Image();
+    const link = document.createElement('a');
+    link.download = `bieu_do_pzem_${currentResolution}_${new Date().toISOString().slice(0,10)}.png`;
+    link.href = imageURI;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+function updatePowerKPI(d){
+    const v=d.power_voltage||0,a=d.power_current||0,w=d.power_watts||0,e=d.power_energy||0;
+    const el=id=>document.getElementById(id);
+    if(el('pwrVolt'))el('pwrVolt').innerHTML=v.toFixed(2)+' <small style="font-size:11px;color:var(--txt-3)">V</small>';
+    if(el('pwrAmp'))el('pwrAmp').innerHTML=a.toFixed(3)+' <small style="font-size:11px;color:var(--txt-3)">A</small>';
+    if(el('pwrWatt'))el('pwrWatt').innerHTML=w.toFixed(1)+' <small style="font-size:11px;color:var(--txt-3)">W</small>';
+    if(el('pwrKwh'))el('pwrKwh').innerHTML=e.toFixed(3)+' <small style="font-size:11px;color:var(--txt-3)">kWh</small>';
+    
+    if(w!==undefined){
+        const now=new Date().toLocaleTimeString('vi-VN',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+        realtimeLabels.push(now);
+        realtimeData.push(w);
+        if(realtimeLabels.length>120){
+            realtimeLabels.shift();
+            realtimeData.shift();
+        }
+        if(pwrChart && currentResolution === 'realtime') {
+            pwrChart.update('none');
+        }
+    }
+    
+    const eff=d.last_efficiency;
+    if(eff){
+        if(eff.status === 'measuring'){
+            if(el('effPre'))el('effPre').textContent=(eff.pre_power||0).toFixed(1)+' W';
+            if(el('effPost'))el('effPost').textContent='Đang đo...';
+            if(el('effDelta')){
+                el('effDelta').textContent='Đo...';
+                el('effDelta').style.color='var(--yellow)';
+            }
+        } else {
+            if(el('effPre'))el('effPre').textContent=(eff.pre_power||0).toFixed(1)+' W';
+            if(el('effPost'))el('effPost').textContent=(eff.post_power||0).toFixed(1)+' W';
+            if(el('effDelta')){
+                const p=eff.improvement_pct||0;
+                el('effDelta').textContent=(p>=0?'+':'')+p.toFixed(1)+' %';
+                el('effDelta').style.color=p>=0?'var(--green)':'var(--red)';
+            }
+        }
+    }
+}
+function loadCleanHistory(){fetch('/api/cleaning/efficiency?limit=20').then(r=>r.json()).then(d=>{const l=document.getElementById('cleanHistList');if(!l||!d.events||d.events.length===0)return;let h='';d.events.forEach(ev=>{const t=(ev.start_time||'').slice(11,19);const g=ev.power_gain||0;const p=ev.improvement_pct||0;const c=g>=0?'var(--green)':'var(--red)';h+='<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid rgba(126,162,195,.1);font-size:12px"><span style="color:var(--txt-3);font-family:Consolas,monospace;font-size:11px;min-width:60px">'+t+'</span><span style="flex:1;color:var(--txt-2)">'+(ev.trigger_reason||'').slice(0,20)+'</span><span style="color:var(--txt-3);font-size:11px">'+(ev.pre_clean_power||0).toFixed(0)+'→'+(ev.post_clean_power||0).toFixed(0)+'W</span><span style="color:'+c+';font-weight:700;min-width:55px;text-align:right">'+(g>=0?'+':'')+p.toFixed(1)+'%</span></div>';});l.innerHTML=h;}).catch(()=>{});}
+function loadDailyStats(){fetch('/api/power/daily?days=7').then(r=>r.json()).then(d=>{if(!dailyChart||!d.daily||d.daily.length===0)return;dailyChart.data.labels=d.daily.map(r=>r.date.slice(5));dailyChart.data.datasets[0].data=d.daily.map(r=>r.total_energy||0);dailyChart.update();}).catch(()=>{});}
+
+/* ==================== DOM CACHE ==================== */
+const $ = id => document.getElementById(id);
+const D = {
+    wsLed: $('wsLed'), wsTxt: $('wsTxt'), clock: $('clock'),
+    banner: $('banner'), bannerTxt: $('bannerTxt'), bannerCd: $('bannerCd'),
+    kLabel: $('kLabel'), kPlcIco: $('kPlcIco'), kPlc: $('kPlc'),
+    kFps: $('kFps'), kClean: $('kClean'),
+    aiLabel: $('aiLabel'), aiConf: $('aiConf'), aiArea: $('aiArea'),
+    pBan: $('pBan'), pBanV: $('pBanV'),
+    pSach: $('pSach'), pSachV: $('pSachV'),
+    cnnMeta: $('cnnMeta'), panelState: $('panelState'),
+    yoloObjects: $('yoloObjects'), yoloCrack: $('yoloCrack'),
+    fpsOvl: $('fpsOvl'),
+    snapImg: $('snapImg'), snapEmpty: $('snapEmpty'),
+    cnnPatchImg: $('cnnPatchImg'), cnnPatchEmpty: $('cnnPatchEmpty'),
+    yoloPanelImg: $('yoloPanelImg'), yoloPanelEmpty: $('yoloPanelEmpty'),
+    snapTime: $('snapTime'), snapConf: $('snapConf'),
+    monInterval: $('monInterval'), monThreshold: $('monThreshold'), monCnnThreshold: $('monCnnThreshold'),
+    monCamera: $('monCamera'), monPlcIp: $('monPlcIp'),
+    intInput: $('intInput'), intInfo: $('intInfo'),
+    plcDet: $('plcDet'), evList: $('evList'),
+    sysState: $('sysState'), btnStart: $('btnStart'), btnStop: $('btnStop'),
+    cfgThr: $('cfgThr'), cfgCnnThr: $('cfgCnnThr'), cnnThrInfo: $('cnnThrInfo'), cfgCam: $('cfgCam'), cfgIp: $('cfgIp'),
+};
+
+let P = {};
+
+
+let lastSnap = null;
+
+
+let events = [{t: ts(), m: 'System initialized', s: 'info'}];
+
+
+
+
+
+function ts() { return new Date().toLocaleTimeString('vi-VN'); }
+
+
+
+
+
+/* Flash effect khi config thay đổi */
+
+
+function flash(el) {
+
+
+    el.style.transition = 'none';
+
+
+    el.style.textShadow = '0 0 8px currentColor';
+
+
+    el.style.transform = 'scale(1.08)';
+
+
+    setTimeout(() => {
+
+
+        el.style.transition = 'all .6s ease';
+
+
+        el.style.textShadow = 'none';
+
+
+        el.style.transform = 'scale(1)';
+
+
+    }, 50);
+
+
+}
+
+
+
+
+
+/* ==================== WEBSOCKET ==================== */
+
+
+let ws = null, wsRt = null;
+
+
+
+
+
+function wsConnect() {
+
+
+    try {
+
+
+        const p = location.protocol === 'https:' ? 'wss:' : 'ws:';
+
+
+        ws = new WebSocket(`${p}//${location.host}/ws`);
+
+
+        ws.onopen = () => {
+
+
+            D.wsLed.className = 'led led-g';
+
+
+            D.wsTxt.textContent = 'Connected';
+
+
+            if (wsRt) { clearTimeout(wsRt); wsRt = null; }
+
+
+        };
+
+
+        ws.onmessage = e => { try { update(JSON.parse(e.data)); } catch(x) {} };
+
+
+        ws.onclose = () => {
+
+
+            D.wsLed.className = 'led led-r';
+
+
+            D.wsTxt.textContent = 'Reconnecting…';
+
+
+            wsRt = setTimeout(wsConnect, 2000);
+
+
+        };
+
+
+        ws.onerror = () => poll();
+
+
+    } catch(e) { poll(); }
+
+
+}
+
+
+
+
+
+let pollId = null;
+
+
+function poll() {
+
+
+    if (pollId) return;
+
+
+    D.wsTxt.textContent = 'Polling';
+
+
+    D.wsLed.className = 'led led-y';
+
+
+    pollId = setInterval(() => {
+
+
+        fetch('/api/status').then(r=>r.json()).then(update).catch(()=>{});
+
+
+    }, 500);
+
+
+}
+
+
+
+
+
+/* ==================== UPDATE UI ==================== */
+
+
+function update(d) {
+
+
+    // Banner
+
+
+    if (d.status !== P.st || d.status_color !== P.sc) {
+
+
+        D.bannerTxt.textContent = d.status;
+
+
+        D.banner.className = 'st-banner ' +
+
+
+            (d.status_color==='danger'?'st-err': d.status_color==='success'?'st-ok':'st-warn');
+
+
+        if (P.stLog !== d.status) { addEvent(d.status, d.status_color==='danger'?'error':'info'); P.stLog = d.status; }
+
+
+        P.st = d.status; P.sc = d.status_color;
+
+
+    }
+
+
+
+
+
+    // Countdown
+
+
+    if (d.next_snapshot !== undefined) {
+
+
+        const m = Math.floor(d.next_snapshot/60), s = d.next_snapshot%60;
+
+
+        D.bannerCd.textContent = `Next scan: ${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+
+
+    }
+
+
+
+
+
+    // Label
+
+
+    const displayLabel = d.cnn_active === false ? 'CNN skipped' : d.label_name;
+
+    if (displayLabel !== P.lb) {
+
+        D.kLabel.textContent = displayLabel;
+
+        D.aiLabel.textContent = displayLabel;
+
+        P.lb = displayLabel;
+
+    }
+
+
+
+
+    // Confidence
+
+
+    const cf = d.cnn_active === false ? '—' : (d.confidence*100).toFixed(1)+'%';
+
+    if (cf !== P.cf) { D.aiConf.textContent = cf; P.cf = cf; }
+
+
+
+
+
+    // Dirty patch ratio
+
+    const ar = (d.area_ratio*100).toFixed(1)+'%';
+
+    if (ar !== P.ar) { D.aiArea.textContent = ar; P.ar = ar; }
+
+
+
+
+
+    // CNN bars: current model has exactly 2 classes [sach, ban]
+
+    if (d.pred_probs && d.pred_probs.length >= 2) {
+
+        const sach = (d.pred_probs[0]*100).toFixed(1);
+
+        const ban = (d.pred_probs[1]*100).toFixed(1);
+
+        D.pSach.style.width = sach+'%'; D.pSachV.textContent = sach+'%';
+
+        D.pBan.style.width = ban+'%'; D.pBanV.textContent = ban+'%';
+
+        D.cnnMeta.textContent = d.cnn_active === false
+
+            ? 'CNN skipped: Panel-Seg did not find a panel'
+
+            : 'CNN: 2 classes (sach, ban)';
+
+    }
+
+
+
+    // YOLO / Panel-Seg auxiliary status
+
+    D.panelState.textContent = d.panel_detected ? 'Detected' : (d.cnn_active === false ? 'Not found' : 'Full frame');
+
+    D.panelState.style.color = d.panel_detected ? 'var(--green)' : (d.cnn_active === false ? 'var(--yellow)' : 'var(--txt-2)');
+
+    const objects = Array.isArray(d.yolo_clean_faults) && d.yolo_clean_faults.length ? d.yolo_clean_faults.join(', ') : 'None';
+
+    const cracks = Array.isArray(d.yolo_crack_faults) && d.yolo_crack_faults.length ? d.yolo_crack_faults.join(', ') : 'None';
+
+    D.yoloObjects.textContent = objects;
+
+    D.yoloCrack.textContent = cracks;
+
+
+
+
+    // FPS
+
+
+    const fp = (d.fps||0).toFixed(0);
+
+
+    D.kFps.textContent = fp;
+
+
+    D.fpsOvl.textContent = fp+' fps';
+
+
+
+
+
+    // Clean count
+
+
+    if (d.clean_count !== P.cc) {
+
+
+        D.kClean.textContent = d.clean_count||0;
+
+
+        if (P.cc !== undefined && d.clean_count > P.cc) addEvent(`Cleaning #${d.clean_count}`, 'warn');
+
+
+        P.cc = d.clean_count;
+
+
+    }
+
+
+
+
+
+    // PLC
+
+
+    if (d.plc_connected !== P.plc) {
+
+
+        const c = d.plc_connected;
+
+
+        D.kPlcIco.className = 'kpi-icon '+(c?'i-green':'i-red');
+
+
+        D.kPlc.textContent = c ? 'Online' : 'Offline';
+
+
+        D.plcDet.textContent = d.plc_status || (c?'Connected':'Disconnected');
+
+
+        D.plcDet.style.color = c ? 'var(--green)' : 'var(--red)';
+
+
+        P.plc = d.plc_connected;
+
+
+    }
+
+
+
+
+
+    // Clock
+
+
+    D.clock.textContent = new Date().toLocaleTimeString('vi-VN');
+
+    // Power KPI
+    if (typeof updatePowerKPI === "function") updatePowerKPI(d);
+
+
+
+
+
+    // Snapshot
+
+
+    if (d.last_snapshot_path && d.last_snapshot_path !== lastSnap) {
+
+        lastSnap = d.last_snapshot_path;
+
+        D.snapImg.src = `/snapshots/${d.last_snapshot_path}?t=${Date.now()}`;
+
+        D.snapImg.style.display = 'block';
+
+        D.snapEmpty.style.display = 'none';
+
+        D.cnnPatchImg.src = `/api/cnn_patch_frame?t=${Date.now()}`;
+
+        D.cnnPatchImg.style.display = 'block';
+
+        D.cnnPatchEmpty.style.display = 'none';
+
+        D.yoloPanelImg.src = `/api/yolo_panel_frame?t=${Date.now()}`;
+
+        D.yoloPanelImg.style.display = 'block';
+
+        D.yoloPanelEmpty.style.display = 'none';
+
+    }
+
+    if (d.last_snapshot_time) {
+
+
+        D.snapTime.innerHTML = `<i class="bi bi-clock"></i> ${d.last_snapshot_time}`;
+
+
+        D.snapConf.textContent = d.cnn_active === false
+
+            ? `Panel-Seg: no panel`
+
+            : `${d.label_name} · ${(d.confidence*100).toFixed(1)}%`;
+
+    }
+
+
+
+
+
+    // Interval — update Monitor (read-only) + Control (input)
+
+
+    if (d.snapshot_interval !== undefined) {
+
+
+        const m = Math.round(d.snapshot_interval/60);
+
+
+        const mt = m + ' min';
+
+
+        if (D.monInterval.textContent !== mt) { D.monInterval.textContent = mt; flash(D.monInterval); }
+
+
+        if (document.activeElement !== D.intInput) D.intInput.value = m;
+
+
+        D.intInfo.textContent = `AI runs every ${m} min`;
+
+
+    }
+
+
+
+
+
+    // Settings sync (App → Web)
+
+
+    if (d.dirt_threshold !== undefined) {
+
+
+        const p = Math.round(d.dirt_threshold * 100);
+
+
+        if (D.monThreshold.textContent !== p + '%') {
+
+
+            D.monThreshold.textContent = p + '%';
+
+
+            flash(D.monThreshold);
+
+
+        }
+
+
+        if (document.activeElement !== D.cfgThr) { D.cfgThr.value = p; }
+
+
+        $('thrInfo').textContent = `Clean when dirty patch ratio ≥ ${p}%`;
+
+    }
+
+
+    if (d.cnn_dirty_threshold !== undefined) {
+
+        const p = Math.round(d.cnn_dirty_threshold * 100);
+
+        if (D.monCnnThreshold.textContent !== p + '%') {
+
+            D.monCnnThreshold.textContent = p + '%';
+
+            flash(D.monCnnThreshold);
+
+        }
+
+        if (document.activeElement !== D.cfgCnnThr) { D.cfgCnnThr.value = p; }
+
+        D.cnnThrInfo.textContent = `CNN decision threshold: ${p}%`;
+
+    }
+
+
+    if (d.camera_id !== undefined) {
+
+
+        const cv = String(d.camera_id);
+
+
+        if (D.monCamera.textContent !== cv) { D.monCamera.textContent = cv; flash(D.monCamera); }
+
+
+        if (document.activeElement !== D.cfgCam) D.cfgCam.value = d.camera_id;
+
+
+    }
+
+
+    if (d.plc_ip !== undefined) {
+
+
+        if (D.monPlcIp.textContent !== d.plc_ip) { D.monPlcIp.textContent = d.plc_ip; flash(D.monPlcIp); }
+
+
+        if (document.activeElement !== D.cfgIp) D.cfgIp.value = d.plc_ip;
+
+
+    }
+
+
+    if (d.is_running !== undefined && d.is_running !== P.isRun) {
+
+
+        D.sysState.textContent = d.is_running ? 'Running' : 'Stopped';
+
+
+        D.sysState.style.color = d.is_running ? 'var(--green)' : 'var(--red)';
+
+
+        D.btnStart.disabled = d.is_running;
+
+
+        D.btnStop.disabled = !d.is_running;
+
+
+        D.btnStart.style.opacity = d.is_running ? '0.5' : '1';
+
+
+        D.btnStop.style.opacity = d.is_running ? '1' : '0.5';
+
+
+        P.isRun = d.is_running;
+
+
+    }
+
+
+}
+
+
+
+
+
+/* ==================== EVENT LOG ==================== */
+
+
+function addEvent(msg, sev) {
+
+
+    events.unshift({t: ts(), m: msg, s: sev});
+
+
+    if (events.length > 50) events.pop();
+
+
+    renderEvents();
+
+
+}
+
+
+function renderEvents() {
+
+
+    D.evList.innerHTML = events.slice(0,20).map(e =>
+
+
+        `<div class="ev-item">
+
+
+            <span class="ev-dot" style="background:var(--${e.s==='error'?'red':e.s==='warn'?'yellow':'green'})"></span>
+
+
+            <span class="ev-time">${e.t}</span>
+
+
+            <span class="ev-msg">${e.m}</span>
+
+
+        </div>`
+
+
+    ).join('');
+
+
+}
+
+
+
+
+
+/* ==================== TOAST ==================== */
+
+
+function toast(msg, type='info') {
+
+
+    const el = document.createElement('div');
+
+
+    el.className = 'toast t-'+(type==='success'?'ok':type==='error'?'err':'info');
+
+
+    const ic = type==='success'?'check-circle-fill':type==='error'?'x-circle-fill':'info-circle-fill';
+
+
+    el.innerHTML = `<i class="bi bi-${ic}"></i> ${msg}`;
+
+
+    $('toastWrap').appendChild(el);
+
+
+    setTimeout(() => { el.style.opacity='0'; el.style.transition='opacity .3s'; setTimeout(()=>el.remove(),300); }, 3500);
+
+
+}
+
+
+
+
+
+/* ==================== API CALLS ==================== */
+
+
+function apiPost(url, body) {
+
+
+    return fetch(url, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body||{})})
+
+
+        .then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();});
+
+
+}
+
+
+
+
+
+function saveSettings() {
+
+
+    apiPost('/api/settings', {
+
+
+        CAMERA_ID: parseInt($('cfgCam').value),
+
+
+        PLC_IP: $('cfgIp').value
+
+
+    }).then(d => {
+
+
+        if(d.success) { toast('Settings saved','success'); addEvent('Config updated','info'); }
+
+
+        else toast(d.message||'Error','error');
+
+
+    }).catch(e => toast(e.message,'error'));
+
+
+}
+
+
+
+
+
+function saveDirtThr() {
+
+
+    const v = parseInt($('cfgThr').value);
+
+
+    if(isNaN(v)||v<0||v>100) { toast('0–100%','error'); return; }
+
+
+    apiPost('/api/settings', { DIRT_THRESHOLD: v/100 })
+
+
+        .then(d => {
+
+
+            if(d.success) {
+
+
+                toast(`Dirt threshold: ${v}%`,'success');
+
+
+                $('thrInfo').textContent = `Clean when dirty patch ratio ≥ ${v}%`;
+
+                D.monThreshold.textContent = v + '%';
+
+
+                addEvent(`Dirt threshold → ${v}%`,'info');
+
+
+            } else toast(d.message||'Error','error');
+
+
+        }).catch(e => toast(e.message,'error'));
+
+
+}
+
+
+
+
+function saveCnnThr() {
+
+    const v = parseInt($('cfgCnnThr').value);
+
+    if(isNaN(v)||v<0||v>100) { toast('0–100%','error'); return; }
+
+    apiPost('/api/settings', { CNN_DIRTY_THRESHOLD: v/100 })
+
+        .then(d => {
+
+            if(d.success) {
+
+                toast(`CNN Threshold: ${v}%`,'success');
+
+                D.cnnThrInfo.textContent = `CNN decision threshold: ${v}%`;
+
+                D.monCnnThreshold.textContent = v + '%';
+
+                addEvent(`CNN Threshold → ${v}%`,'info');
+
+            } else toast(d.message||'Error','error');
+
+        }).catch(e => toast(e.message,'error'));
+
+}
+
+
+
+
+function setInterval_() {
+
+
+    const m = parseInt(D.intInput.value);
+
+
+    if(isNaN(m)||m<1||m>1440) { toast('1–1440 min','error'); return; }
+
+
+    apiPost('/api/snapshot_interval', {interval:m*60})
+
+
+        .then(d => { if(d.success){toast(`Interval: ${m} min`,'success');D.intInfo.textContent=`AI runs every ${m} min`;}else toast(d.message,'error');})
+
+
+        .catch(e => toast(e.message,'error'));
+
+
+}
+
+
+
+
+
+function plcReconnect() {
+
+
+    const b=$('btnReconn'); b.disabled=true;
+
+
+    apiPost('/api/plc/reconnect', {PLC_IP:$('cfgIp').value})
+
+
+        .then(d=>{toast(d.message,d.success?'success':'error');addEvent('PLC reconnect: '+d.message, d.success?'info':'error');})
+
+
+        .catch(e=>toast(e.message,'error'))
+
+
+        .finally(()=>setTimeout(()=>b.disabled=false,2000));
+
+
+}
+
+
+
+
+
+function manualClean() {
+
+
+    const b=$('btnClean'); b.disabled=true;
+
+
+    b.innerHTML='<i class="bi bi-arrow-repeat"></i> Processing…';
+
+
+    apiPost('/api/plc/manual_clean')
+
+
+        .then(d=>{toast(d.message,d.success?'success':'error');addEvent('Manual clean: '+d.message, d.success?'warn':'error');})
+
+
+        .catch(e=>toast(e.message,'error'))
+
+
+        .finally(()=>setTimeout(()=>{b.disabled=false;b.innerHTML='<i class="bi bi-lightning-fill"></i> Manual Clean';},3000));
+
+
+}
+
+
+
+
+
+function sysStart() {
+
+
+    const b=$('btnStart'); b.disabled=true;
+
+
+    apiPost('/api/system/start')
+
+
+        .then(d=>{toast(d.message,d.success?'success':'error');addEvent('System start',d.success?'info':'error');})
+
+
+        .catch(e=>toast(e.message,'error'))
+
+
+        .finally(()=>setTimeout(()=>b.disabled=false,2000));
+
+
+}
+
+
+
+
+
+function sysStop() {
+
+
+    const b=$('btnStop'); b.disabled=true;
+
+
+    apiPost('/api/system/stop')
+
+
+        .then(d=>{toast(d.message,d.success?'success':'error');addEvent('System stop',d.success?'warn':'error');})
+
+
+        .catch(e=>toast(e.message,'error'))
+
+
+        .finally(()=>setTimeout(()=>b.disabled=false,2000));
+
+
+}
+
+
+
+
+
+function loadCfg() {
+
+
+    fetch('/api/settings').then(r=>r.json()).then(d=>{
+
+
+        if(d.PLC_IP) {
+
+
+            if (document.activeElement !== D.cfgIp) $('cfgIp').value = d.PLC_IP;
+
+
+            D.monPlcIp.textContent = d.PLC_IP;
+
+
+        }
+
+
+        if(d.CAMERA_ID!==undefined) {
+
+
+            if (document.activeElement !== D.cfgCam) $('cfgCam').value = d.CAMERA_ID;
+
+
+            D.monCamera.textContent = d.CAMERA_ID;
+
+
+        }
+
+
+        if(d.DIRT_THRESHOLD!==undefined) {
+
+
+            const p = Math.round(d.DIRT_THRESHOLD*100);
+
+
+            if (document.activeElement !== D.cfgThr) $('cfgThr').value = p;
+
+
+            D.monThreshold.textContent = p + '%';
+
+
+            $('thrInfo').textContent = `Clean when dirty patch ratio ≥ ${p}%`;
+
+        }
+
+
+        if(d.CNN_DIRTY_THRESHOLD!==undefined) {
+
+            const p = Math.round(d.CNN_DIRTY_THRESHOLD*100);
+
+            if (document.activeElement !== D.cfgCnnThr) $('cfgCnnThr').value = p;
+
+            D.monCnnThreshold.textContent = p + '%';
+
+            D.cnnThrInfo.textContent = `CNN decision threshold: ${p}%`;
+
+        }
+
+
+        if(d.SNAPSHOT_INTERVAL!==undefined) {
+
+
+            const m = Math.round(d.SNAPSHOT_INTERVAL/60);
+
+
+            if (document.activeElement !== D.intInput) D.intInput.value = m;
+
+
+            D.intInfo.textContent = 'AI runs every ' + m + ' min';
+
+
+            D.monInterval.textContent = m + ' min';
+
+
+        }
+
+
+        if(d.IS_RUNNING!==undefined) {
+
+
+            D.sysState.textContent = d.IS_RUNNING ? 'Running' : 'Stopped';
+
+
+            D.sysState.style.color = d.IS_RUNNING ? 'var(--green)' : 'var(--red)';
+
+
+            D.btnStart.disabled = d.IS_RUNNING;
+
+
+            D.btnStop.disabled = !d.IS_RUNNING;
+
+
+            D.btnStart.style.opacity = d.IS_RUNNING ? '0.5' : '1';
+
+
+            D.btnStop.style.opacity = d.IS_RUNNING ? '1' : '0.5';
+
+
+        }
+
+
+    }).catch(()=>{});
+
+
+}
+
+
+
+
+
+// Poll settings mỗi 5s
+
+
+let _cfgPollTimer = setInterval(loadCfg, 5000);
+
+
+
+
+
+/* ==================== INIT ==================== */
+
+
+renderEvents();
+
+
+wsConnect();
+
+
+loadCfg();
+
+
+</script>
+
+<!-- ==================== FLOATING AI CHAT WIDGET ==================== -->
+<style>
+  #ai-chat-btn {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    z-index: 9999;
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    color: #ffffff;
+    border: none;
+    border-radius: 50px;
+    padding: 12px 20px;
+    font-weight: 600;
+    font-size: 14px;
+    box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+  }
+  #ai-chat-btn:hover {
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 12px 28px rgba(59, 130, 246, 0.6);
+  }
+
+  #ai-chat-box {
+    position: fixed;
+    bottom: 85px;
+    right: 25px;
+    z-index: 9999;
+    width: 380px;
+    max-width: calc(100vw - 30px);
+    height: 520px;
+    max-height: calc(100vh - 110px);
+    background: #111620;
+    border: 1px solid #2a3244;
+    border-radius: 16px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+    display: none;
+    flex-direction: column;
+    overflow: hidden;
+    animation: aiSlideUp 0.3s ease-out;
+  }
+
+  @keyframes aiSlideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .ai-header {
+    background: #171d2a;
+    padding: 14px 18px;
+    border-bottom: 1px solid #2a3244;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .ai-title {
+    font-weight: 700;
+    font-size: 15px;
+    color: #f59e0b;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .ai-sub {
+    font-size: 11px;
+    color: #94a3b8;
+    font-weight: 400;
+  }
+  .ai-close-btn {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 2px 6px;
+  }
+  .ai-close-btn:hover { color: #ffffff; }
+
+  .ai-quick-actions {
+    display: flex;
+    gap: 6px;
+    padding: 8px 12px;
+    background: #0b0e14;
+    border-bottom: 1px solid #2a3244;
+    overflow-x: auto;
+  }
+  .ai-quick-btn {
+    background: #1e2636;
+    border: 1px solid #2a3244;
+    color: #e2e8f0;
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .ai-quick-btn:hover {
+    background: #3b82f6;
+    color: #ffffff;
+    border-color: #3b82f6;
+  }
+
+  .ai-body {
+    flex: 1;
+    padding: 14px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: #0b0e14;
+  }
+
+  .ai-msg {
+    max-width: 85%;
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 13px;
+    line-height: 1.5;
+    word-break: break-word;
+  }
+  .ai-msg-user {
+    align-self: flex-end;
+    background: #1d4ed8;
+    color: #ffffff;
+    border-bottom-right-radius: 2px;
+  }
+  .ai-msg-bot {
+    align-self: flex-start;
+    background: #1e2636;
+    color: #e2e8f0;
+    border: 1px solid #2a3244;
+    border-bottom-left-radius: 2px;
+  }
+  .ai-msg-bot pre {
+    background: #0b0e14;
+    padding: 6px;
+    border-radius: 6px;
+    overflow-x: auto;
+    font-size: 12px;
+  }
+
+  .ai-footer {
+    padding: 10px 12px;
+    background: #171d2a;
+    border-top: 1px solid #2a3244;
+    display: flex;
+    gap: 8px;
+  }
+  .ai-input {
+    flex: 1;
+    background: #0b0e14;
+    border: 1px solid #2a3244;
+    border-radius: 20px;
+    padding: 8px 14px;
+    color: #ffffff;
+    font-size: 13px;
+    outline: none;
+  }
+  .ai-input:focus { border-color: #3b82f6; }
+  .ai-send-btn {
+    background: #3b82f6;
+    color: #ffffff;
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .ai-send-btn:hover { background: #1d4ed8; }
+
+  /* Voice Mic Button */
+  .ai-mic-btn {
+    background: #1e2636;
+    color: #94a3b8;
+    border: 1px solid #2a3244;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 15px;
+  }
+  .ai-mic-btn:hover { background: #2a3244; color: #ffffff; }
+  .ai-mic-btn.recording {
+    background: #ef4444 !important;
+    color: #ffffff !important;
+    border-color: #ef4444 !important;
+    animation: pulseMic 1.2s infinite;
+  }
+
+  @keyframes pulseMic {
+    0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+    70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+  }
+
+  .ai-speaker-toggle {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 2px 6px;
+    transition: color 0.2s;
+  }
+  .ai-speaker-toggle.active { color: #22c55e; }
+  .ai-speaker-toggle:hover { color: #ffffff; }
+</style>
+
+<!-- Floating Toggle Button -->
+<button id="ai-chat-btn" onclick="toggleAiChat()">
+  🤖 <span>AI Trợ Lý Smart Solar</span>
+</button>
+
+<!-- Floating Chat Box -->
+<div id="ai-chat-box">
+  <div class="ai-header">
+    <div>
+      <div class="ai-title">
+        ☀️ AI Smart Solar Cleaning
+        <button id="ai-speaker-btn" class="ai-speaker-toggle active" title="Bật/Tắt đọc giọng nói" onclick="toggleTts()">🔊</button>
+      </div>
+      <div class="ai-sub">Trợ lý AI Trực Tuyến & Giọng Nói (vi-VN)</div>
+    </div>
+    <button class="ai-close-btn" onclick="toggleAiChat()">✕</button>
+  </div>
+
+  <div class="ai-quick-actions">
+    <button class="ai-quick-btn" onclick="sendQuickAi('Hệ thống có đang hoạt động và tình trạng pin ra sao?')">📊 Tình trạng pin</button>
+    <button class="ai-quick-btn" onclick="sendQuickAi('Kích hoạt vệ sinh tấm pin giúp tôi')">🧹 Ra lệnh vệ sinh</button>
+    <button class="ai-quick-btn" onclick="sendQuickAi('Khởi động hệ thống giám sát')">▶️ Khởi động</button>
+    <button class="ai-quick-btn" onclick="sendQuickAi('Dừng hệ thống giám sát')">⏹️ Dừng hệ thống</button>
+  </div>
+
+  <div class="ai-body" id="ai-messages">
+    <div class="ai-msg ai-msg-bot">
+      👋 Xin chào! Tôi là Trợ lý AI Smart Solar.<br><br>
+      Bạn có thể hỏi tôi bằng <b>văn bản</b> hoặc bấm nút 🎙️ để <b>nói trực tiếp giọng nói (vi-VN)</b> ra lệnh và hỏi đáp!
+    </div>
+  </div>
+
+  <div class="ai-footer">
+    <button id="ai-mic-btn" class="ai-mic-btn" onclick="toggleVoiceInput()" title="Nói để ra lệnh giọng nói">🎙️</button>
+    <input type="text" id="ai-input-text" class="ai-input" placeholder="Hỏi AI hoặc bấm 🎙️ nói giọng nói..." onkeydown="if(event.key==='Enter') sendAiMessage()">
+    <button class="ai-send-btn" onclick="sendAiMessage()" title="Gửi">🚀</button>
+  </div>
+</div>
+
+<script>
+  let ttsEnabled = true;
+  let speechRec = null;
+  let isListening = false;
+
+  function toggleTts() {
+    ttsEnabled = !ttsEnabled;
+    const btn = document.getElementById('ai-speaker-btn');
+    if (btn) {
+      btn.className = 'ai-speaker-toggle ' + (ttsEnabled ? 'active' : '');
+      btn.textContent = ttsEnabled ? '🔊' : '🔇';
+    }
+  }
+
+  function speakText(text) {
+    if (!ttsEnabled || !('speechSynthesis' in window)) return;
+    try {
+      window.speechSynthesis.cancel();
+      // Filter out HTML tags and system headers
+      const cleanText = text.replace(/<[^>]*>/g, '').replace(/\[Hệ thống\]:/g, '').trim();
+      if (!cleanText) return;
+
+      const utterance = new SpeechSynthesisUtterance(cleanText);
+      utterance.lang = 'vi-VN';
+      utterance.rate = 1.0;
+
+      // Select Vietnamese voice if available
+      const voices = window.speechSynthesis.getVoices();
+      const viVoice = voices.find(v => v.lang.includes('vi') || v.lang.includes('VI'));
+      if (viVoice) utterance.voice = viVoice;
+
+      window.speechSynthesis.speak(utterance);
+    } catch(e) {
+      console.warn('Text-to-speech error:', e);
+    }
+  }
+
+  function initSpeechRec() {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) return null;
+
+    const rec = new SpeechRecognition();
+    rec.lang = 'vi-VN';
+    rec.continuous = false;
+    rec.interimResults = true;
+
+    rec.onstart = function() {
+      isListening = true;
+      const btn = document.getElementById('ai-mic-btn');
+      if (btn) btn.classList.add('recording');
+      const inputEl = document.getElementById('ai-input-text');
+      if (inputEl) inputEl.placeholder = '🎙️ Đang lắng nghe giọng nói...';
+    };
+
+    rec.onresult = function(event) {
+      let resultText = '';
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        resultText += event.results[i][0].transcript;
+      }
+      const inputEl = document.getElementById('ai-input-text');
+      if (inputEl) inputEl.value = resultText;
+    };
+
+    rec.onerror = function(event) {
+      console.warn('Lỗi nhận diện giọng nói:', event.error);
+      stopVoiceInput();
+    };
+
+    rec.onend = function() {
+      stopVoiceInput();
+      const inputEl = document.getElementById('ai-input-text');
+      if (inputEl && inputEl.value.trim() !== '') {
+        sendAiMessage();
+      }
+    };
+
+    return rec;
+  }
+
+  function toggleVoiceInput() {
+    if (isListening) {
+      stopVoiceInput();
+    } else {
+      if (!speechRec) speechRec = initSpeechRec();
+      if (speechRec) {
+        try {
+          speechRec.start();
+        } catch(e) {
+          stopVoiceInput();
+        }
+      } else {
+        alert('Trình duyệt của bạn không hỗ trợ Nhận diện Giọng nói. Vui lòng sử dụng Google Chrome hoặc Microsoft Edge!');
+      }
+    }
+  }
+
+  function stopVoiceInput() {
+    isListening = false;
+    const btn = document.getElementById('ai-mic-btn');
+    if (btn) btn.classList.remove('recording');
+    const inputEl = document.getElementById('ai-input-text');
+    if (inputEl) inputEl.placeholder = 'Hỏi AI hoặc bấm 🎙️ nói giọng nói...';
+    if (speechRec) {
+      try { speechRec.stop(); } catch(e) {}
+    }
+  }
+
+  function toggleAiChat() {
+    const box = document.getElementById('ai-chat-box');
+    box.style.display = (box.style.display === 'flex') ? 'none' : 'flex';
+    if(box.style.display === 'flex') {
+      document.getElementById('ai-input-text').focus();
+    }
+  }
+
+  function sendQuickAi(text) {
+    document.getElementById('ai-input-text').value = text;
+    sendAiMessage();
+  }
+
+  async function sendAiMessage() {
+    const inputEl = document.getElementById('ai-input-text');
+    const msg = inputEl.value.trim();
+    if(!msg) return;
+
+    inputEl.value = '';
+
+    // Append User Message
+    const msgContainer = document.getElementById('ai-messages');
+    const userDiv = document.createElement('div');
+    userDiv.className = 'ai-msg ai-msg-user';
+    userDiv.textContent = msg;
+    msgContainer.appendChild(userDiv);
+
+    // Append Bot Loading Message
+    const botDiv = document.createElement('div');
+    botDiv.className = 'ai-msg ai-msg-bot';
+    botDiv.innerHTML = '⏳ <i>AI đang suy nghĩ & xử lý...</i>';
+    msgContainer.appendChild(botDiv);
+    msgContainer.scrollTop = msgContainer.scrollHeight;
+
+    try {
+      const res = await fetch('/api/ai/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: msg })
+      });
+      const data = await res.json();
+      
+      if(data.success) {
+        botDiv.innerHTML = data.reply.replace(/\n/g, '<br>');
+        // Speak AI response if enabled
+        speakText(data.reply);
+      } else {
+        botDiv.innerHTML = '❌ ' + (data.message || 'Lỗi kết nối AI');
+      }
+    } catch(err) {
+      botDiv.innerHTML = '❌ Lỗi kết nối tới AI API: ' + err.message;
+    }
+    msgContainer.scrollTop = msgContainer.scrollHeight;
+  }
+</script>
+
+</body>
+</html>
+

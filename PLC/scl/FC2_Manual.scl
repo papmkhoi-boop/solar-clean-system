@@ -1,0 +1,98 @@
+﻿// ==============================================================================
+// Du an: SolarClean - He thong ve sinh tam pin nang luong mat troi thong minh
+// Khoi chuc nang: FC2 (Manual1)
+// Mo ta: Dieu khien ban tu dong bang tay (1 luot khu hoi: Xuong -> Nghi 2s -> Len -> Dung)
+// Tuong duong ban ve Ladder: manual.pdf
+// ==============================================================================
+
+FUNCTION "Manual1" : Void
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+   VAR_TEMP 
+      Wiper_Pulse_P : Bool;  // Xung canh len cua nut can gat
+      LS1_Pulse_N : Bool;    // Xung canh xuong cua cong tac hanh trinh dinh
+   END_VAR
+
+BEGIN
+   // --------------------------------------------------------------------------
+   // Network 1: Khoi tao nguon van hanh tay (PowerMan)
+   // --------------------------------------------------------------------------
+   IF NOT "Datablock".TempFloat THEN
+      "Datablock".PowerMan := FALSE;
+      "Datablock"."Temp PowerMan" := FALSE;
+   ELSIF "Datablock".Man THEN
+      "Datablock".PowerMan := TRUE;
+      "Datablock"."Temp PowerMan" := TRUE;
+   END_IF;
+
+   // Neu khong co quyen van hanh tay, ngat het cac ngo ra lien quan
+   IF NOT "Datablock".PowerMan THEN
+      "Datablock".Motor_FWD := FALSE;
+      "Datablock".Motor_REV := FALSE;
+      "Datablock"."Water Pump" := FALSE;
+      "Datablock".TempTimeREV := FALSE;
+      "Datablock".Timer2 := FALSE;
+      RETURN;
+   END_IF;
+
+   // --------------------------------------------------------------------------
+   // Xu ly bat suon xung tin hieu (Edge Detection)
+   // --------------------------------------------------------------------------
+   // Bat canh len -(P)- cua nut Start Wiper
+   Wiper_Pulse_P := "Datablock"."Start Wiper" AND (NOT "Datablock".TempStartWiper);
+   "Datablock".TempStartWiper := "Datablock"."Start Wiper";
+
+   // Bat canh xuong -(N)- cua cong tac hanh trinh LS1
+   LS1_Pulse_N := (NOT "Datablock".LS1) AND "Datablock".Temp_LS1;
+   "Datablock".Temp_LS1 := "Datablock".LS1;
+
+   // --------------------------------------------------------------------------
+   // Network 4: Dao chieu tu dong & Dinh thoi tre 2s tai day tam pin
+   // --------------------------------------------------------------------------
+   // Chot co dao chieu: Set khi cham day LS2, Reset khi ve dinh LS1
+   IF NOT "Datablock".LS1 THEN
+      "Datablock".TempTimeREV := FALSE;
+   ELSIF NOT "Datablock".LS2 THEN
+      "Datablock".TempTimeREV := TRUE;
+   END_IF;
+
+   // Goi Timer tre 2 giay qua bien the hien trong Datablock
+   "Datablock".Timer_Manual_Delay(
+      IN := "Datablock".TempTimeREV,
+      PT := T#2S
+   );
+   "Datablock".Timer2 := "Datablock".Timer_Manual_Delay.Q;
+
+   // --------------------------------------------------------------------------
+   // Network 2: Dieu khien Can gat chay xuong (Motor_FWD)
+   // --------------------------------------------------------------------------
+   IF "Datablock".Motor_REV OR (NOT "Datablock".TempFloat) OR "Datablock".TempTimeREV OR (NOT "Datablock"."Start Wiper") THEN
+      "Datablock".Motor_FWD := FALSE;
+      "Datablock".Temp5 := FALSE;
+   ELSIF "Datablock".PowerMan AND Wiper_Pulse_P THEN
+      "Datablock".Motor_FWD := TRUE;
+      "Datablock".Temp5 := TRUE;
+   END_IF;
+
+   // --------------------------------------------------------------------------
+   // Network 3: Dieu khien Can gat keo len (Motor_REV)
+   // --------------------------------------------------------------------------
+   IF LS1_Pulse_N OR "Datablock".Motor_FWD OR (NOT "Datablock".TempFloat) OR (NOT "Datablock"."Start Wiper") THEN
+      "Datablock".Motor_REV := FALSE;
+      "Datablock".Temp3 := FALSE;
+   ELSIF "Datablock".PowerMan AND "Datablock".Timer2 THEN
+      "Datablock".Motor_REV := TRUE;
+      "Datablock".Temp3 := TRUE;
+   END_IF;
+
+   // --------------------------------------------------------------------------
+   // Network 5: Dieu khien Bom nuoc doc lap bang tay
+   // --------------------------------------------------------------------------
+   IF (NOT "Datablock"."Start Pump") OR (NOT "Datablock".TempFloat) THEN
+      "Datablock"."Water Pump" := FALSE;
+      "Datablock"."Temp pump" := FALSE;
+   ELSIF "Datablock".PowerMan AND "Datablock"."Start Pump" THEN
+      "Datablock"."Water Pump" := TRUE;
+      "Datablock"."Temp pump" := TRUE;
+   END_IF;
+END_FUNCTION

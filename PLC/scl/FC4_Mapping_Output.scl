@@ -1,0 +1,48 @@
+﻿// ==============================================================================
+// Du an: SolarClean - He thong ve sinh tam pin nang luong mat troi thong minh
+// Khoi chuc nang: FC4 (Mapping_Output)
+// Mo ta: Xuat cac lenh dieu khien tu DB ra cac ngo ra ro-le vat ly (%Q) kem khoa an toan
+// Tuong duong ban ve Ladder: out.pdf
+// ==============================================================================
+
+FUNCTION "Mapping Output" : Void
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+   VAR_TEMP 
+   END_VAR
+
+BEGIN
+   // --------------------------------------------------------------------------
+   // Network 1: Xuat ngo ra dieu khien May bom nuoc
+   // Khoa an toan: Ngat tuc thoi khi co co dung khan cap "Temp Estop"
+   // --------------------------------------------------------------------------
+   %Q0.0 := "Datablock"."Water Pump" AND (NOT "Datablock"."Temp Estop"); // "Pump"
+
+   // --------------------------------------------------------------------------
+   // Network 2: Xuat ngo ra dieu khien Dong co can gat 2 chieu (FWD / REV)
+   // Khoa an toan: Ngat tuc thoi khi co co dung khan cap "Temp Estop"
+   // --------------------------------------------------------------------------
+   %Q0.1 := "Datablock".Motor_FWD AND (NOT "Datablock"."Temp Estop");   // "Wiper FWD" (Gat xuong)
+   %Q0.2 := "Datablock".Motor_REV AND (NOT "Datablock"."Temp Estop");   // "Wiper REV" (Keo len)
+
+   // --------------------------------------------------------------------------
+   // Network 3: Xuat den bao trang thai Nguon he thong (System RUN)
+   // --------------------------------------------------------------------------
+   %Q0.4 := "Datablock".System;                                         // "DenHT"
+
+   // --------------------------------------------------------------------------
+   // Network 4: Xuat den bao hien thi Che do van hanh
+   // --------------------------------------------------------------------------
+   %Q0.5 := "Datablock".On_Man;                                         // "DenManu" (Den che do Tay)
+   %Q0.6 := "Datablock".On_Auto;                                        // "DenAuto" (Den che do Tu dong)
+
+   // --------------------------------------------------------------------------
+   // Network 5: Xuat den bao He thong dang trong chu trinh Ve sinh
+   // Sang khi He thong dang ON va (Bom dang chay HOAC Can gat dang di chuyen FWD/REV)
+   // --------------------------------------------------------------------------
+   %Q0.7 := "Datablock".System AND (
+            "Datablock"."Water Pump" OR 
+            "Datablock".Motor_FWD    OR 
+            "Datablock".Motor_REV
+   );                                                                   // "DenCleaning"
+END_FUNCTION

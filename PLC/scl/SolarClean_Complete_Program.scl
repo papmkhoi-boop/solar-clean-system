@@ -1,0 +1,477 @@
+﻿// ==============================================================================
+// DU AN: SOLARCLEAN - HE THONG VE SINH TAM PIN NANG LUONG MAT TROI THONG MINH
+// FILE NGUON TONG HOP: TIA PORTAL EXTERNAL SOURCE FILE (.SCL)
+// 
+// Huong dan nap vao Siemens TIA Portal (v15 / v16 / v17 / v18 / v19):
+// 1. Trong cay Project cua TIA Portal, mo nhanh "External source files".
+// 2. Nhap dup vao "Add new external file" va chon file nay (.scl).
+// 3. Nhap chuot phai vao file vua them -> Chon "Generate blocks from source".
+// 4. Toan bo cac khoi DB1, DB6, FC1, FC2, FC3, FC4, FC5 va OB1 se duoc tao tu dong!
+// ==============================================================================
+
+// ==============================================================================
+// 1. KHOI DU LIEU DB1: GIAO TIEP PYTHON AI (COMPUTER VISION) QUA SNAP7
+// ==============================================================================
+DATA_BLOCK "DB1"
+{ S7_Optimized_Access := 'FALSE' }
+VERSION : 0.1
+NON_RETAIN
+   VAR 
+      DetechDroppingBird : Bool;   // DBX0.0: AI phat hien phan chim
+      DetectLeaf : Bool;           // DBX0.1: AI phat hien la cay
+      DetectDirty : Bool;          // DBX0.2: AI phat hien bui ban be mat
+      Auto : Bool;                 // DBX0.3: Lenh kich hoat Auto tu phan mem
+      Voltage : Real;              // DBD2: Dien ap pin mat troi tu cam bien PZEM (V)
+      Current : Real;              // DBD6: Dong dien pin mat troi tu cam bien PZEM (A)
+      Power : Real;                // DBD10: Cong suat phat dien (W)
+      Energy : Real;               // DBD14: Tong san luong dien tich luy (Wh)
+   END_VAR
+BEGIN
+   DetechDroppingBird := FALSE;
+   DetectLeaf := FALSE;
+   DetectDirty := FALSE;
+   Auto := FALSE;
+   Voltage := 0.0;
+   Current := 0.0;
+   Power := 0.0;
+   Energy := 0.0;
+END_DATA_BLOCK
+
+
+// ==============================================================================
+// 2. KHOI DU LIEU DB6 ("Datablock"): LUU TRU TOAN BO BIEN TRANG THAI NOI BO
+// ==============================================================================
+DATA_BLOCK "Datablock"
+{ S7_Optimized_Access := 'FALSE' }
+VERSION : 0.1
+NON_RETAIN
+   VAR 
+      // Quan ly nguon & Che do van hanh
+      System : Bool;
+      Auto : Bool;
+      Man : Bool;
+      On_System : Bool;
+      Off_System : Bool;
+      On_Man : Bool;
+      On_Auto : Bool;
+      PowerMan : Bool;
+      "Power Auto" : Bool;
+      TempFloat : Bool;
+
+      // Tin hieu Dieu khien Co cau chap hanh
+      Motor_FWD : Bool;
+      Motor_REV : Bool;
+      "Water Pump" : Bool;
+      "Start Wiper" : Bool;
+      "Start Pump" : Bool;
+      "Stop Pump" : Bool;
+
+      // Tin hieu Cam bien & An toan
+      LS1 : Bool;
+      LS2 : Bool;
+      "Temp Estop" : Bool;
+
+      // Nhan dien Khuyet tat (Chot tu DB1)
+      DetectDirty : Bool;
+      DetectLeaf : Bool;
+
+      // Co dieu khien chu ky & Dinh thoi
+      Timer1 : Bool;
+      Timer2 : Bool;
+      TempTimeREV : Bool;
+      TempTimeFWD : Bool;
+      "Temp 15" : Bool;
+      Temp16 : Bool;
+      CycleDone : Bool;
+      "Cycles Stop" : Bool;
+
+      // The hien IEC Timer & Counter truc tiep trong Datablock (Chuan SCL Siemens)
+      Timer_Manual_Delay : TON_TIME;  // Timer 2s cho Manual
+      Timer_Auto_Bottom  : TON_TIME;  // Timer 2s o day cho Auto
+      Timer_Auto_Top     : TON_TIME;  // Timer 2s o dinh cho Auto
+      Timer_Auto_Pulse   : TON_TIME;  // Timer 100ms phat xung Auto
+      Counter_Cycles     : CTU_INT;   // Bo dem 3 vong cho Auto
+
+      // Bien co trung gian noi bo tuong thich nguyen ban LAD
+      "Temp HT" : Bool;
+      TempAuto : Bool;
+      TempMan : Bool;
+      TempPowerAuto : Bool;
+      "Temp PowerMan" : Bool;
+      "Temp pump" : Bool;
+      Temp1 : Bool;
+      Temp3 : Bool;
+      Temp4 : Bool;
+      Temp5 : Bool;
+      Temp6 : Bool;
+      Temp7 : Bool;
+      Temp8 : Bool;
+      Temp9 : Bool;
+      Temp10 : Bool;
+      Temp11 : Bool;
+      TempStartWiper : Bool;
+      Temp_LS1 : Bool;
+      Temp_LS2 : Bool;
+      TempDectectLeaf : Bool;
+      TempDetectDirty : Bool;
+      TempMan_1 : Bool;
+   END_VAR
+BEGIN
+   System := FALSE;
+   Auto := FALSE;
+   Man := FALSE;
+   Motor_FWD := FALSE;
+   Motor_REV := FALSE;
+   "Water Pump" := FALSE;
+   CycleDone := FALSE;
+END_DATA_BLOCK
+
+
+// ==============================================================================
+// 3. KHOI FC3: ANH XA DAU VAO VAT LY (Mapping_Input)
+// ==============================================================================
+FUNCTION "Mapping_Input" : Void
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+BEGIN
+   // Network 1: Doc nut nhan Start / Stop he thong
+   "Datablock".On_System := %I0.1;    // "Start HT"
+   "Datablock".Off_System := %I0.3;   // "Stop HT"
+
+   // Network 2: Doc cong tac chon che do
+   "Datablock".On_Man := %I0.0 AND "Datablock".System;    // "MAN"
+   "Datablock".On_Auto := %I0.2 AND "Datablock".System;   // "Auto(1)"
+
+   // Network 3 & 4: Nut an van hanh tay Can gat & Bom
+   "Datablock"."Start Pump" := %I0.5; // "Control Motor"
+   "Datablock"."Start Wiper" := %I0.4; // "Control CG"
+
+   // Network 5: Cong tac hanh trinh
+   "Datablock".LS1 := %I1.0;          // "CTHT up" (Dinh)
+   "Datablock".LS2 := %I0.7;          // "CTHT down" (Day)
+
+   // Network 6: Dung khan cap Estop (Tiep diem NC ngoai thuc te)
+   "Datablock"."Temp Estop" := NOT %I0.6; // "Estop"
+END_FUNCTION
+
+
+// ==============================================================================
+// 4. KHOI FC1: NGUON VA CHON CHE DO (Power and Mode)
+// ==============================================================================
+FUNCTION "Power and Mode" : Void
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+BEGIN
+   // Network 4: Khoa lien dong chong kich dup 2 che do
+   "Datablock".TempFloat := "Datablock".On_Man OR "Datablock".On_Auto;
+
+   // Network 1: Quan ly nguon he thong (System On/Off) - Uu tien Reset
+   IF (NOT "Datablock".Off_System) OR "Datablock"."Temp Estop" THEN
+      "Datablock".System := FALSE;
+      "Datablock"."Temp HT" := FALSE;
+   ELSIF "Datablock".On_System THEN
+      "Datablock".System := TRUE;
+      "Datablock"."Temp HT" := TRUE;
+   END_IF;
+
+   IF NOT "Datablock".System THEN
+      "Datablock".Auto := FALSE;
+      "Datablock".Man := FALSE;
+      "Datablock".TempAuto := FALSE;
+      "Datablock".TempMan := FALSE;
+      RETURN;
+   END_IF;
+
+   // Network 2: Duy tri che do Auto
+   IF "Datablock".TempMan OR "Datablock"."Temp Estop" OR (NOT "Datablock".TempFloat) THEN
+      "Datablock".Auto := FALSE;
+      "Datablock".TempAuto := FALSE;
+   ELSIF "Datablock".System AND "Datablock".On_Auto THEN
+      "Datablock".Auto := TRUE;
+      "Datablock".TempAuto := TRUE;
+      "Datablock".Man := FALSE;
+      "Datablock".TempMan := FALSE;
+   END_IF;
+
+   // Network 3: Duy tri che do Manual
+   IF "Datablock".TempAuto OR "Datablock"."Temp Estop" OR (NOT "Datablock".TempFloat) THEN
+      "Datablock".Man := FALSE;
+      "Datablock".TempMan := FALSE;
+   ELSIF "Datablock".System AND "Datablock".On_Man THEN
+      "Datablock".Man := TRUE;
+      "Datablock".TempMan := TRUE;
+      "Datablock".Auto := FALSE;
+      "Datablock".TempAuto := FALSE;
+   END_IF;
+END_FUNCTION
+
+
+// ==============================================================================
+// 5. KHOI FC2: DIEU KHIEN BANG TAY (Manual1)
+// ==============================================================================
+FUNCTION "Manual1" : Void
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+   VAR_TEMP 
+      Wiper_Pulse_P : Bool;
+      LS1_Pulse_N : Bool;
+   END_VAR
+BEGIN
+   // Network 1: Quyen van hanh tay PowerMan
+   IF NOT "Datablock".TempFloat THEN
+      "Datablock".PowerMan := FALSE;
+      "Datablock"."Temp PowerMan" := FALSE;
+   ELSIF "Datablock".Man THEN
+      "Datablock".PowerMan := TRUE;
+      "Datablock"."Temp PowerMan" := TRUE;
+   END_IF;
+
+   IF NOT "Datablock".PowerMan THEN
+      "Datablock".Motor_FWD := FALSE;
+      "Datablock".Motor_REV := FALSE;
+      "Datablock"."Water Pump" := FALSE;
+      "Datablock".TempTimeREV := FALSE;
+      "Datablock".Timer2 := FALSE;
+      RETURN;
+   END_IF;
+
+   // Bat suon xung
+   Wiper_Pulse_P := "Datablock"."Start Wiper" AND (NOT "Datablock".TempStartWiper);
+   "Datablock".TempStartWiper := "Datablock"."Start Wiper";
+
+   LS1_Pulse_N := (NOT "Datablock".LS1) AND "Datablock".Temp_LS1;
+   "Datablock".Temp_LS1 := "Datablock".LS1;
+
+   // Network 4: Tre 2 giay tai day LS2 truoc khi dao chieu len
+   IF NOT "Datablock".LS1 THEN
+      "Datablock".TempTimeREV := FALSE;
+   ELSIF NOT "Datablock".LS2 THEN
+      "Datablock".TempTimeREV := TRUE;
+   END_IF;
+
+   "Datablock".Timer_Manual_Delay(
+      IN := "Datablock".TempTimeREV,
+      PT := T#2S
+   );
+   "Datablock".Timer2 := "Datablock".Timer_Manual_Delay.Q;
+
+   // Network 2: Can gat chay xuong
+   IF "Datablock".Motor_REV OR (NOT "Datablock".TempFloat) OR "Datablock".TempTimeREV OR (NOT "Datablock"."Start Wiper") THEN
+      "Datablock".Motor_FWD := FALSE;
+      "Datablock".Temp5 := FALSE;
+   ELSIF "Datablock".PowerMan AND Wiper_Pulse_P THEN
+      "Datablock".Motor_FWD := TRUE;
+      "Datablock".Temp5 := TRUE;
+   END_IF;
+
+   // Network 3: Can gat keo len
+   IF LS1_Pulse_N OR "Datablock".Motor_FWD OR (NOT "Datablock".TempFloat) OR (NOT "Datablock"."Start Wiper") THEN
+      "Datablock".Motor_REV := FALSE;
+      "Datablock".Temp3 := FALSE;
+   ELSIF "Datablock".PowerMan AND "Datablock".Timer2 THEN
+      "Datablock".Motor_REV := TRUE;
+      "Datablock".Temp3 := TRUE;
+   END_IF;
+
+   // Network 5: Bom nuoc bang tay
+   IF (NOT "Datablock"."Start Pump") OR (NOT "Datablock".TempFloat) THEN
+      "Datablock"."Water Pump" := FALSE;
+      "Datablock"."Temp pump" := FALSE;
+   ELSIF "Datablock".PowerMan AND "Datablock"."Start Pump" THEN
+      "Datablock"."Water Pump" := TRUE;
+      "Datablock"."Temp pump" := TRUE;
+   END_IF;
+END_FUNCTION
+
+
+// ==============================================================================
+// 6. KHOI FC5: DIEU KHIEN TU DONG (Auto)
+// ==============================================================================
+FUNCTION "Auto" : Void
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+   VAR_TEMP 
+      Timer100ms_Q : Bool;
+      Counter_CV : Int;
+   END_VAR
+BEGIN
+   // Network 1: Nguon tu dong
+   IF "Datablock".CycleDone THEN
+      "Datablock"."Power Auto" := FALSE;
+      "Datablock".TempPowerAuto := FALSE;
+   ELSIF "Datablock".Auto THEN
+      "Datablock"."Power Auto" := TRUE;
+      "Datablock".TempPowerAuto := TRUE;
+   END_IF;
+
+   IF NOT "Datablock"."Power Auto" THEN
+      RETURN;
+   END_IF;
+
+   // Network 2: Tiep nhan nhan dien AI tu DB1
+   // La cay -> quet kho
+   IF "Datablock".CycleDone OR "Datablock".Motor_FWD THEN
+      "Datablock".DetectLeaf := FALSE;
+      "Datablock".TempDectectLeaf := FALSE;
+   ELSIF "Datablock"."Power Auto" AND "DB1".DetectLeaf THEN
+      "Datablock".DetectLeaf := TRUE;
+      "Datablock".TempDectectLeaf := TRUE;
+   END_IF;
+
+   // Bui hoac Phan chim -> rua uot
+   IF "Datablock".CycleDone OR "Datablock"."Water Pump" THEN
+      "Datablock".DetectDirty := FALSE;
+      "Datablock".TempDetectDirty := FALSE;
+   ELSIF "Datablock"."Power Auto" AND ("DB1".DetectDirty OR "DB1".DetechDroppingBird) THEN
+      "Datablock".DetectDirty := TRUE;
+      "Datablock".TempDetectDirty := TRUE;
+   END_IF;
+
+   // Network 5: Dinh thoi tre 2s tai 2 dau hanh trinh
+   // Tre day LS2
+   IF NOT "Datablock".LS1 THEN
+      "Datablock".TempTimeREV := FALSE;
+   ELSIF NOT "Datablock".LS2 THEN
+      "Datablock".TempTimeREV := TRUE;
+   END_IF;
+
+   "Datablock".Timer_Auto_Bottom(
+      IN := "Datablock".TempTimeREV,
+      PT := T#2S
+   );
+   "Datablock".Timer2 := "Datablock".Timer_Auto_Bottom.Q;
+
+   // Tre dinh LS1
+   IF (NOT "Datablock".LS2) OR "Datablock".CycleDone THEN
+      "Datablock".TempTimeFWD := FALSE;
+   ELSIF NOT "Datablock".LS1 THEN
+      "Datablock".TempTimeFWD := TRUE;
+   END_IF;
+
+   "Datablock".Timer_Auto_Top(
+      IN := "Datablock".TempTimeFWD,
+      PT := T#2S
+   );
+   "Datablock".Timer1 := "Datablock".Timer_Auto_Top.Q;
+
+   // Tao xung kich chu ky moi Temp 15 (100ms)
+   "Datablock".Timer_Auto_Pulse(
+      IN := "Datablock".Motor_FWD,
+      PT := T#100MS
+   );
+   Timer100ms_Q := "Datablock".Timer_Auto_Pulse.Q;
+
+   IF Timer100ms_Q OR "Datablock".CycleDone THEN
+      "Datablock"."Temp 15" := FALSE;
+   ELSIF "Datablock".Timer1 AND (NOT "Datablock".Temp16) THEN
+      "Datablock"."Temp 15" := TRUE;
+   END_IF;
+
+   // Network 3: Chay thuan (FWD)
+   IF "Datablock".Motor_REV OR "Datablock".TempTimeREV OR "Datablock".CycleDone THEN
+      "Datablock".Motor_FWD := FALSE;
+      "Datablock".Temp7 := FALSE;
+   ELSIF "Datablock".DetectDirty OR "Datablock".DetectLeaf OR "Datablock"."Temp 15" THEN
+      "Datablock".Motor_FWD := TRUE;
+      "Datablock".Temp7 := TRUE;
+   END_IF;
+
+   // Network 4: Chay nghich (REV)
+   IF "Datablock".Motor_FWD OR "Datablock".TempTimeFWD OR "Datablock".CycleDone THEN
+      "Datablock".Motor_REV := FALSE;
+      "Datablock".Temp8 := FALSE;
+   ELSIF "Datablock".Timer2 THEN
+      "Datablock".Motor_REV := TRUE;
+      "Datablock".Temp8 := TRUE;
+   END_IF;
+
+   // Network 7: Bom nuoc tu dong
+   IF "Datablock".CycleDone OR (NOT "Datablock".TempFloat) THEN
+      "Datablock"."Water Pump" := FALSE;
+      "Datablock".Temp11 := FALSE;
+   ELSIF "Datablock".DetectDirty THEN
+      "Datablock"."Water Pump" := TRUE;
+      "Datablock".Temp11 := TRUE;
+   END_IF;
+
+   // Network 6: Bo dem 3 vong khu hoi (CTU PV=3)
+   "Datablock".Counter_Cycles(
+      CU := "Datablock"."Temp 15",
+      R  := "Datablock".CycleDone,
+      PV := 3,
+      Q  => "Datablock".CycleDone
+   );
+
+   IF "Datablock".DetectLeaf OR "Datablock".DetectDirty THEN
+      "Datablock".Temp16 := FALSE;
+   ELSIF "Datablock".CycleDone THEN
+      "Datablock".Temp16 := TRUE;
+   END_IF;
+
+   IF NOT "Datablock".TempFloat THEN
+      "Datablock".CycleDone := TRUE;
+   END_IF;
+END_FUNCTION
+
+
+// ==============================================================================
+// 7. KHOI FC4: XUAT DAU RA VAT LY (Mapping Output)
+// ==============================================================================
+FUNCTION "Mapping Output" : Void
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+BEGIN
+   // %Q0.0: Bom nuoc (khoa dung khan cap Estop)
+   %Q0.0 := "Datablock"."Water Pump" AND (NOT "Datablock"."Temp Estop");
+
+   // %Q0.1 & %Q0.2: Dong co FWD / REV (khoa dung khan cap Estop)
+   %Q0.1 := "Datablock".Motor_FWD AND (NOT "Datablock"."Temp Estop");
+   %Q0.2 := "Datablock".Motor_REV AND (NOT "Datablock"."Temp Estop");
+
+   // %Q0.4: Den bao He thong RUN
+   %Q0.4 := "Datablock".System;
+
+   // %Q0.5 & %Q0.6: Den bao Che do Van hanh
+   %Q0.5 := "Datablock".On_Man;
+   %Q0.6 := "Datablock".On_Auto;
+
+   // %Q0.7: Den bao dang Ve sinh
+   %Q0.7 := "Datablock".System AND (
+            "Datablock"."Water Pump" OR 
+            "Datablock".Motor_FWD    OR 
+            "Datablock".Motor_REV
+   );
+END_FUNCTION
+
+
+// ==============================================================================
+// 8. KHOI OB1: VONG QUET CHINH (Main Program Sweep Cycle)
+// ==============================================================================
+ORGANIZATION_BLOCK "Main"
+TITLE = "Main Program Sweep (Cycle)"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+   VAR_TEMP 
+      Initial_Call : Bool;
+      Remanence : Bool;
+   END_VAR
+BEGIN
+   // 1. Quet dau vao
+   "Mapping_Input"();
+
+   // 2. Phan xu Nguon & Che do
+   "Power and Mode"();
+
+   // 3. Thuc thi Van hanh tay (neu NOT Auto)
+   IF NOT "Datablock".Auto THEN
+      "Manual1"();
+   END_IF;
+
+   // 4. Thuc thi Van hanh tu dong (neu NOT Man)
+   IF NOT "Datablock".Man THEN
+      "Auto"();
+   END_IF;
+
+   // 5. Xuat dau ra
+   "Mapping Output"();
+END_ORGANIZATION_BLOCK

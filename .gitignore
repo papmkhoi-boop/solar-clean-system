@@ -1,0 +1,70 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyd
+
+# C extensions
+*.so
+
+# Python Environments
+venv/
+.venv/
+env/
+ENV/
+
+# Databases
+*.db
+*.sqlite3
+
+# Runtime logs and temporary files
+logs/
+*.log
+scratch/
+snapshots/
+data_samples/
+benchmark_results/
+
+# Build and release artifacts
+build/
+dist/
+dist_new/
+dist_tools/
+releases/
+backups/
+_archive_*/
+*.exe
+*.apk
+*.zip
+*.rar
+*.7z
+*.tar.gz
+
+# Large Model weights exceeding GitHub 100MB limit
+panel 2.pt
+*.pt.large
+
+# Large uncompressed docs / thesis archives
+docs/bai_bao_va_bao_cao/archive_old_versions/
+docs/bai_bao_va_bao_cao/KLTN-HuynhMinhHuan-KTNL0121-2101492/
+*.tiff
+
+# Separate git repositories (already tracked in their own repos)
+solar_clean_cloud/
+website/
+
+# Node / React Native generated
+node_modules/
+**/node_modules/
+**/android/.gradle/
+**/android/app/build/
+**/android/build/
+.expo/
+.npm/
+
+# IDE and agent metadata
+.vscode/
+.agents/
+.idea/
+*.swp
+*.swo

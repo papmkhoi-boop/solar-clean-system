@@ -1,0 +1,37 @@
+﻿// ==============================================================================
+// Du an: SolarClean - He thong ve sinh tam pin nang luong mat troi thong minh
+// Khoi chuc nang: FC3 (Mapping_Input)
+// Mo ta: Doc va anh xa toan bo ngo vao vat ly (%I) vao Data Block "Datablock" (DB6)
+// Tuong duong ban ve Ladder: in.pdf
+// ==============================================================================
+
+FUNCTION "Mapping_Input" : Void
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+   VAR_TEMP 
+   END_VAR
+
+BEGIN
+   // Network 1: Doc nut nhan Start / Stop he thong
+   "Datablock".On_System := %I0.1;    // Nut an BAT he thong ("Start HT")
+   "Datablock".Off_System := %I0.3;   // Nut an TAT he thong ("Stop HT")
+
+   // Network 2: Doc cong tac chon che do (chi co hieu luc khi System dang ON)
+   "Datablock".On_Man := %I0.0 AND "Datablock".System;    // Chon che do Bang tay ("MAN")
+   "Datablock".On_Auto := %I0.2 AND "Datablock".System;   // Chon che do Tu dong ("Auto(1)")
+
+   // Network 3: Doc nut bam dieu khien Bom nuoc bang tay
+   "Datablock"."Start Pump" := %I0.5; // Nut bat bom ("Control Motor")
+
+   // Network 4: Doc nut bam dieu khien Can gat / Choi bang tay
+   "Datablock"."Start Wiper" := %I0.4; // Nut kich hoat can gat ("Control CG")
+
+   // Network 5: Doc tin hieu cam bien cong tac hanh trinh
+   "Datablock".LS1 := %I1.0;          // Cam bien hanh trinh dinh ("CTHT up")
+   "Datablock".LS2 := %I0.7;          // Cam bien hanh trinh day ("CTHT down")
+
+   // Network 6: Doc nut dung khan cap E-Stop (Chuan an toan may Fail-Safe)
+   // Nut Estop ngoai thuc te dau tiep diem NC (1 khi nha, 0 khi bi an/dut day).
+   // Trong chuong trinh LAD dung tiep diem thuong dong |/|, tuong duong NOT %I0.6
+   "Datablock"."Temp Estop" := NOT %I0.6; // Co dung khan cap (1 khi bi tac dong)
+END_FUNCTION

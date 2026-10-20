@@ -1,0 +1,152 @@
+﻿// ==============================================================================
+// Du an: SolarClean - He thong ve sinh tam pin nang luong mat troi thong minh
+// Khoi chuc nang: FC5 (Auto)
+// Mo ta: Chu trinh lam sach tu dong thong minh nhan dien tu AI, dem 3 vong khu hoi
+// Tuong duong ban ve Ladder: auto.pdf
+// ==============================================================================
+
+FUNCTION "Auto" : Void
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+   VAR_TEMP 
+      Timer100ms_Q : Bool;
+      Counter_CV : Int;
+   END_VAR
+
+BEGIN
+   // --------------------------------------------------------------------------
+   // Network 1: Khoi tao nguon Tu dong (Power Auto)
+   // --------------------------------------------------------------------------
+   IF "Datablock".CycleDone THEN
+      "Datablock"."Power Auto" := FALSE;
+      "Datablock".TempPowerAuto := FALSE;
+   ELSIF "Datablock".Auto THEN
+      "Datablock"."Power Auto" := TRUE;
+      "Datablock".TempPowerAuto := TRUE;
+   END_IF;
+
+   // Neu khong o che do Tu dong, ngat chu trinh va thoat
+   IF NOT "Datablock"."Power Auto" THEN
+      RETURN;
+   END_IF;
+
+   // --------------------------------------------------------------------------
+   // Network 2: Tiep nhan tin hieu nhan dien tu AI (Khoi DB1)
+   // --------------------------------------------------------------------------
+   // Nhanh 1: Nhan dien La cay (Chi quet kho)
+   IF "Datablock".CycleDone OR "Datablock".Motor_FWD THEN
+      "Datablock".DetectLeaf := FALSE;
+      "Datablock".TempDectectLeaf := FALSE;
+   ELSIF "Datablock"."Power Auto" AND "DB1".DetectLeaf THEN
+      "Datablock".DetectLeaf := TRUE;
+      "Datablock".TempDectectLeaf := TRUE;
+   END_IF;
+
+   // Nhanh 2: Nhan dien Bui ban hoac Phan chim (Can rua uot bang may bom)
+   IF "Datablock".CycleDone OR "Datablock"."Water Pump" THEN
+      "Datablock".DetectDirty := FALSE;
+      "Datablock".TempDetectDirty := FALSE;
+   ELSIF "Datablock"."Power Auto" AND ("DB1".DetectDirty OR "DB1".DetechDroppingBird) THEN
+      "Datablock".DetectDirty := TRUE;
+      "Datablock".TempDetectDirty := TRUE;
+   END_IF;
+
+   // --------------------------------------------------------------------------
+   // Network 5: Dinh thoi tre o 2 dau hanh trinh & Bat dao chieu
+   // --------------------------------------------------------------------------
+   // 1. Tre tai day (LS2) - Nghi 2 giay truoc khi keo can gat len
+   IF NOT "Datablock".LS1 THEN
+      "Datablock".TempTimeREV := FALSE;
+   ELSIF NOT "Datablock".LS2 THEN
+      "Datablock".TempTimeREV := TRUE;
+   END_IF;
+
+   "Datablock".Timer_Auto_Bottom(
+      IN := "Datablock".TempTimeREV,
+      PT := T#2S
+   );
+   "Datablock".Timer2 := "Datablock".Timer_Auto_Bottom.Q;
+
+   // 2. Tre tai dinh (LS1) - Nghi 2 giay truoc khi bat dau vong quet tiep theo
+   IF (NOT "Datablock".LS2) OR "Datablock".CycleDone THEN
+      "Datablock".TempTimeFWD := FALSE;
+   ELSIF NOT "Datablock".LS1 THEN
+      "Datablock".TempTimeFWD := TRUE;
+   END_IF;
+
+   "Datablock".Timer_Auto_Top(
+      IN := "Datablock".TempTimeFWD,
+      PT := T#2S
+   );
+   "Datablock".Timer1 := "Datablock".Timer_Auto_Top.Q;
+
+   // 3. Tao xung kich hoat chu ky moi (Temp 15) co do rong 100ms
+   "Datablock".Timer_Auto_Pulse(
+      IN := "Datablock".Motor_FWD,
+      PT := T#100MS
+   );
+   Timer100ms_Q := "Datablock".Timer_Auto_Pulse.Q;
+
+   IF Timer100ms_Q OR "Datablock".CycleDone THEN
+      "Datablock"."Temp 15" := FALSE;
+   ELSIF "Datablock".Timer1 AND (NOT "Datablock".Temp16) THEN
+      "Datablock"."Temp 15" := TRUE;
+   END_IF;
+
+   // --------------------------------------------------------------------------
+   // Network 3: Dieu khien Can gat chay xuong (Motor_FWD)
+   // Kich hoat khi co bui, co la hoac co xung lap chu ky moi (Temp 15)
+   // --------------------------------------------------------------------------
+   IF "Datablock".Motor_REV OR "Datablock".TempTimeREV OR "Datablock".CycleDone THEN
+      "Datablock".Motor_FWD := FALSE;
+      "Datablock".Temp7 := FALSE;
+   ELSIF "Datablock".DetectDirty OR "Datablock".DetectLeaf OR "Datablock"."Temp 15" THEN
+      "Datablock".Motor_FWD := TRUE;
+      "Datablock".Temp7 := TRUE;
+   END_IF;
+
+   // --------------------------------------------------------------------------
+   // Network 4: Dieu khien Can gat keo len (Motor_REV)
+   // Kich hoat sau khi nghi tre 2s tai day (Timer2 = 1)
+   // --------------------------------------------------------------------------
+   IF "Datablock".Motor_FWD OR "Datablock".TempTimeFWD OR "Datablock".CycleDone THEN
+      "Datablock".Motor_REV := FALSE;
+      "Datablock".Temp8 := FALSE;
+   ELSIF "Datablock".Timer2 THEN
+      "Datablock".Motor_REV := TRUE;
+      "Datablock".Temp8 := TRUE;
+   END_IF;
+
+   // --------------------------------------------------------------------------
+   // Network 7: Dieu khien Bom nuoc tu dong (Chi kich khi co Bui hoac Phan chim)
+   // --------------------------------------------------------------------------
+   IF "Datablock".CycleDone OR (NOT "Datablock".TempFloat) THEN
+      "Datablock"."Water Pump" := FALSE;
+      "Datablock".Temp11 := FALSE;
+   ELSIF "Datablock".DetectDirty THEN
+      "Datablock"."Water Pump" := TRUE;
+      "Datablock".Temp11 := TRUE;
+   END_IF;
+
+   // --------------------------------------------------------------------------
+   // Network 6: Bo dem chu ky (CTU voi PV = 3) & Chot ket thuc chu trinh
+   // --------------------------------------------------------------------------
+   "Datablock".Counter_Cycles(
+      CU := "Datablock"."Temp 15",
+      R  := "Datablock".CycleDone,
+      PV := 3,
+      Q  => "Datablock".CycleDone
+   );
+
+   // Chot khoa co Temp16 de ngan xung lap sau khi hoan tat chu trinh
+   IF "Datablock".DetectLeaf OR "Datablock".DetectDirty THEN
+      "Datablock".Temp16 := FALSE;
+   ELSIF "Datablock".CycleDone THEN
+      "Datablock".Temp16 := TRUE;
+   END_IF;
+
+   // Khoa an toan: Neu su co mat TempFloat thi ngat chu trinh ngay
+   IF NOT "Datablock".TempFloat THEN
+      "Datablock".CycleDone := TRUE;
+   END_IF;
+END_FUNCTION

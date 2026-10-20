@@ -1,0 +1,27 @@
+﻿================================================================================
+  HƯỚNG DẪN SỬ DỤNG GÓI ĐO ĐỘ TRỄ SUY LUẬN AI TRÊN MÁY TÍNH THỰC TẾ (FIELD PC)
+================================================================================
+
+1. GIỚI THIỆU GÓI PHẦN MỀM:
+   Gói này được đóng gói độc lập, đầy đủ trọng số các mô hình AI và ảnh thực nghiệm
+   để bạn copy sang máy tính điều khiển thực tế (máy đặt cạnh dàn pin / PLC S7-1200)
+   nhằm đo đạc thời gian suy luận (ms) chính xác 100% trên phần cứng thực tế.
+
+2. CẤU TRÚC THƯ MỤC:
+   - models/               : Chứa 3 file mô hình thực tế (panel 2.pt, Solar.pt, buiban.h5).
+   - snapshots_mau/        : Chứa các ảnh thực nghiệm mẫu chụp từ dàn pin.
+   - ket_qua_thuc_nghiem/  : Nơi phần mềm tự động xuất báo cáo JSON, CSV, Markdown và ảnh nhận diện.
+   - benchmark_core.py     : Chương trình tính toán đo lường cốt lõi.
+
+3. CÁCH CHẠY TRÊN MÁY TÍNH MỚI:
+   - Bước 1: Copy toàn bộ thư mục `cong_cu_do_do_tre_ai_thuc_te` sang máy tính thực tế qua USB hoặc Drive.
+   - Bước 2 (Lần đầu tiên): Nhấp đúp vào `4_Cai_Dat_Thu_Vien_Cho_May_Moi.bat` để máy tự cài PyTorch, Ultralytics, OpenCV.
+   - Bước 3: Nhấp đúp vào `1_Chay_Giao_Dien_Do_Tre.bat` để mở giao diện đồ họa trực quan (GUI)
+             Hoặc nhấp `2_Chay_Do_Nhanh_GPU.bat` để máy tự đo nhanh bằng GPU.
+
+4. XUẤT SỐ LIỆU ĐƯA VÀO BÀI BÁO KHOA HỌC:
+   Sau khi chạy xong, trong thư mục `ket_qua_thuc_nghiem/` sẽ có:
+   - `bang_hoc_thuat_*.md` : Bảng thống kê Mean ± Std, Median, P95 định dạng sẵn cho bài báo TNU JST/IEEE.
+   - `ket_qua_do_tre_*.csv`: Dữ liệu thô từng chu kỳ đo (để vẽ biểu đồ Boxplot nếu cần).
+   - `anh_nhan_dien/`      : Các ảnh trực quan hóa thể hiện rõ lưới 32 ô màu và lá cây đã nhận diện.
+================================================================================

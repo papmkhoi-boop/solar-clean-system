@@ -1,0 +1,34 @@
+﻿// ==============================================================================
+// Du an: SolarClean - He thong ve sinh tam pin nang luong mat troi thong minh
+// Khoi du lieu: DB1 (AI_Interface)
+// Mo ta: Cong giao tiep giua phan mem Python AI (Computer Vision) va PLC qua Snap7
+// ==============================================================================
+
+DATA_BLOCK "DB1"
+{ S7_Optimized_Access := 'FALSE' } // Yeu cau Standard Access (Non-optimized) de Snap7 doc theo offset
+VERSION : 0.1
+NON_RETAIN
+   VAR 
+      // Vung tin hieu nhan dien tu Camera AI (Offset 0.0 - 0.3)
+      DetechDroppingBird : Bool;   // DBX0.0: AI phat hien phan chim
+      DetectLeaf : Bool;           // DBX0.1: AI phat hien la cay
+      DetectDirty : Bool;          // DBX0.2: AI phat hien bui ban be mat
+      Auto : Bool;                 // DBX0.3: Trang thai Auto kich hoat tu phan mem
+
+      // Du lieu do luong cong suat tu cam bien PZEM-017 (Offset 2.0 - 17.0)
+      Voltage : Real;              // DBD2: Dien ap pin mat troi (V)
+      Current : Real;              // DBD6: Dong dien pin mat troi (A)
+      Power : Real;                // DBD10: Cong suat phat (W)
+      Energy : Real;               // DBD14: Tong san luong dien (Wh/kWh)
+   END_VAR
+
+BEGIN
+   DetechDroppingBird := FALSE;
+   DetectLeaf := FALSE;
+   DetectDirty := FALSE;
+   Auto := FALSE;
+   Voltage := 0.0;
+   Current := 0.0;
+   Power := 0.0;
+   Energy := 0.0;
+END_DATA_BLOCK

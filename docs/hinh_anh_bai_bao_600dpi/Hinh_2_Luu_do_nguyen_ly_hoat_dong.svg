@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 950 1220" width="950" height="1220" style="background-color:#ffffff; font-family:Arial, Helvetica, sans-serif;">
+
+  
+
+  <defs>
+
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#334155" />
+
+    </marker>
+
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#16a34a" />
+
+    </marker>
+
+    <marker id="arrow-gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#64748b" />
+
+    </marker>
+
+  </defs>
+
+
+
+  <!-- Tiêu đề -->
+
+  <text x="475" y="30" text-anchor="middle" font-size="16" font-weight="bold" fill="#0f172a">LƯU ĐỒ THUẬT TOÁN ĐIỀU PHỐI HỆ THỐNG</text>
+
+
+
+  <!-- 1. BẮT ĐẦU (Hình Oval) -->
+
+  <ellipse cx="475" cy="75" rx="115" ry="24" fill="#f1f5f9" stroke="#334155" stroke-width="2"/>
+
+  <text x="475" y="81" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f172a">BẮT ĐẦU</text>
+
+  <line x1="475" y1="99" x2="475" y2="130" stroke="#334155" stroke-width="2" marker-end="url(#arrow)"/>
+
+
+
+  <!-- 2. CAMERA -->
+
+  <polygon points="345,175 605,175 585,130 325,130" fill="#e0f2fe" stroke="#0284c7" stroke-width="2"/>
+
+  <text x="475" y="152" text-anchor="middle" font-size="13" font-weight="bold" fill="#0369a1">Camera thu nhận khung hình</text>
+
+  <text x="475" y="170" text-anchor="middle" font-size="11" fill="#0369a1">(1080p)</text>
+
+  <line x1="475" y1="175" x2="475" y2="205" stroke="#334155" stroke-width="2" marker-end="url(#arrow)"/>
+
+
+
+  <!-- 3. TIỀN XỬ LÝ ẢNH (ĐÃ BỎ CLAHE) -->
+
+  <rect x="355" y="205" width="240" height="45" fill="#ffffff" stroke="#334155" stroke-width="2"/>
+
+  <text x="475" y="233" text-anchor="middle" font-size="14" font-weight="bold" fill="#0f172a">Tiền xử lí ảnh</text>
+
+
+
+  <!-- Mũi tên rẽ 2 nhánh -->
+
+  <path d="M 475 250 L 475 275 L 240 275 L 240 300" fill="none" stroke="#334155" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <path d="M 475 250 L 475 275 L 710 275 L 710 300" fill="none" stroke="#334155" stroke-width="2" marker-end="url(#arrow)"/>
+
+
+
+  <!-- 4. NHÁNH TRÁI: Yolo nhận vật che khuất -->
+
+  <rect x="110" y="300" width="260" height="55" fill="#fef3c7" stroke="#d97706" stroke-width="2"/>
+
+  <text x="240" y="324" text-anchor="middle" font-size="13" font-weight="bold" fill="#92400e">Yolo nhận các vật che khuất</text>
+
+  <text x="240" y="343" text-anchor="middle" font-size="12" fill="#92400e">(lá cây, phân chim)</text>
+
+  <line x1="240" y1="355" x2="240" y2="400" stroke="#334155" stroke-width="2" marker-end="url(#arrow)"/>
+
+
+
+  <!-- 5. NHÁNH PHẢI 1: Yolo nhận diện khung pin -->
+
+  <rect x="580" y="300" width="260" height="55" fill="#fef3c7" stroke="#d97706" stroke-width="2"/>
+
+  <text x="710" y="324" text-anchor="middle" font-size="13" font-weight="bold" fill="#92400e">Yolo nhận diện</text>
+
+  <text x="710" y="343" text-anchor="middle" font-size="12" fill="#92400e">khung quang điện</text>
+
+  <line x1="710" y1="355" x2="710" y2="385" stroke="#334155" stroke-width="2" marker-end="url(#arrow)"/>
+
+
+
+  <!-- 6. NHÁNH PHẢI 2: CNN nhận diện tính toán mức độ bẩn (ĐÃ BỎ 32 ô lưới) -->
+
+  <rect x="580" y="385" width="260" height="55" fill="#f3e8ff" stroke="#9333ea" stroke-width="2"/>
+
+  <text x="710" y="409" text-anchor="middle" font-size="13" font-weight="bold" fill="#6b21a8">CNN nhận diện tính</text>
+
+  <text x="710" y="428" text-anchor="middle" font-size="12" fill="#6b21a8">toán mức độ bẩn</text>
+
+  <line x1="710" y1="440" x2="710" y2="485" stroke="#334155" stroke-width="2" marker-end="url(#arrow)"/>
+
+
+
+  <!-- 7. HÌNH THOI 1 (TRÁI) -->
+
+  <polygon points="240,400 365,450 240,500 115,450" fill="#fef9c3" stroke="#ca8a04" stroke-width="2"/>
+
+  <text x="240" y="445" text-anchor="middle" font-size="13" font-weight="bold" fill="#78350f">Có dị vật</text>
+
+  <text x="240" y="463" text-anchor="middle" font-size="12" font-weight="bold" fill="#78350f">(lá cây, phân chim)?</text>
+
+
+
+  <!-- 8. HÌNH THOI 2 (PHẢI - ĐÃ BỎ 25%) -->
+
+  <polygon points="710,485 835,535 710,585 585,535" fill="#fef9c3" stroke="#ca8a04" stroke-width="2"/>
+
+  <text x="710" y="530" text-anchor="middle" font-size="13" font-weight="bold" fill="#78350f">Tỷ lệ bẩn lớn</text>
+
+  <text x="710" y="548" text-anchor="middle" font-size="12" font-weight="bold" fill="#78350f">hơn mức cài đặt?</text>
+
+
+
+  <!-- (1) ĐỈNH ĐÁY HÌNH THOI 1 -> PLC -->
+
+  <line x1="240" y1="500" x2="240" y2="665" stroke="#16a34a" stroke-width="2.5" marker-end="url(#arrow-green)"/>
+
+  <rect x="245" y="565" width="36" height="22" fill="#ffffff" stroke="#16a34a" stroke-width="1.5"/>
+
+  <text x="263" y="581" text-anchor="middle" font-size="12" font-weight="bold" fill="#16a34a">Có</text>
+
+
+
+  <!-- (2) ĐỈNH PHẢI HÌNH THOI 1 -> Tấm pin sạch -->
+
+  <path d="M 365 450 L 495 450 L 495 670 L 590 670" fill="none" stroke="#64748b" stroke-width="2" marker-end="url(#arrow-gray)"/>
+
+  <rect x="395" y="435" width="50" height="22" fill="#ffffff" stroke="#64748b" stroke-width="1.5"/>
+
+  <text x="420" y="451" text-anchor="middle" font-size="12" font-weight="bold" fill="#64748b">Không</text>
+
+
+
+  <!-- (3) ĐỈNH TRÁI HÌNH THOI 2 -> PLC -->
+
+  <path d="M 585 535 L 440 535 L 440 695 L 360 695" fill="none" stroke="#16a34a" stroke-width="2.5" marker-end="url(#arrow-green)"/>
+
+  <rect x="490" y="520" width="36" height="22" fill="#ffffff" stroke="#16a34a" stroke-width="1.5"/>
+
+  <text x="508" y="536" text-anchor="middle" font-size="12" font-weight="bold" fill="#16a34a">Có</text>
+
+
+
+  <!-- (4) ĐỈNH ĐÁY HÌNH THOI 2 -> Tấm pin sạch -->
+
+  <line x1="710" y1="585" x2="710" y2="640" stroke="#64748b" stroke-width="2" marker-end="url(#arrow-gray)"/>
+
+  <rect x="715" y="600" width="50" height="22" fill="#ffffff" stroke="#64748b" stroke-width="1.5"/>
+
+  <text x="740" y="616" text-anchor="middle" font-size="12" font-weight="bold" fill="#64748b">Không</text>
+
+
+
+  <!-- 9. KHỐI PLC S7-1200 -->
+
+  <rect x="120" y="665" width="240" height="60" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+
+  <text x="240" y="700" text-anchor="middle" font-size="16" font-weight="bold" fill="#166534">PLC S7-1200</text>
+
+
+
+  <!-- 10. KHỐI TẤM PIN SẠCH -->
+
+  <rect x="590" y="640" width="240" height="60" fill="#f8fafc" stroke="#64748b" stroke-width="2"/>
+
+  <text x="710" y="667" text-anchor="middle" font-size="14" font-weight="bold" fill="#334155">Tấm pin sạch</text>
+
+  <text x="710" y="686" text-anchor="middle" font-size="12" fill="#64748b">(ghi nhận log)</text>
+
+
+
+  <!-- DƯỚI PLC: 2 ĐỘNG CƠ -->
+
+  <path d="M 240 725 L 240 755 L 130 755 L 130 780" fill="none" stroke="#334155" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <path d="M 240 725 L 240 755 L 350 755 L 350 780" fill="none" stroke="#334155" stroke-width="2" marker-end="url(#arrow)"/>
+
+
+
+  <rect x="35" y="780" width="190" height="50" fill="#ffffff" stroke="#334155" stroke-width="1.8"/>
+
+  <text x="130" y="803" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f172a">Động cơ vòi</text>
+
+  <text x="130" y="821" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f172a">phun nước</text>
+
+
+
+  <rect x="255" y="780" width="190" height="50" fill="#ffffff" stroke="#334155" stroke-width="1.8"/>
+
+  <text x="350" y="803" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f172a">Động cơ</text>
+
+  <text x="350" y="821" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f172a">chổi quét</text>
+
+
+
+  <!-- GOM VÀO DATABASE -->
+
+  <path d="M 130 830 L 130 855 L 475 855" fill="none" stroke="#334155" stroke-width="2"/>
+
+  <line x1="350" y1="830" x2="350" y2="855" stroke="#334155" stroke-width="2"/>
+
+  <path d="M 710 700 L 710 855 L 475 855" fill="none" stroke="#334155" stroke-width="2"/>
+
+  <line x1="475" y1="855" x2="475" y2="885" stroke="#334155" stroke-width="2" marker-end="url(#arrow)"/>
+
+
+
+  <!-- 11. KHỐI DATABASE -->
+
+  <ellipse cx="475" cy="959" rx="180" ry="16" fill="#e2e8f0" stroke="#475569" stroke-width="2"/>
+
+  <rect x="295" y="896" width="360" height="63" fill="#e2e8f0" stroke="none"/>
+
+  <line x1="295" y1="896" x2="295" y2="959" stroke="#475569" stroke-width="2"/>
+
+  <line x1="655" y1="896" x2="655" y2="959" stroke="#475569" stroke-width="2"/>
+
+  <ellipse cx="475" cy="896" rx="180" ry="16" fill="#f8fafc" stroke="#475569" stroke-width="2"/>
+
+  <text x="475" y="938" text-anchor="middle" font-size="15" font-weight="bold" fill="#0f172a">Lưu vào Database &amp; IoT</text>
+
+
+
+  <!-- Mũi tên: DB -> Kết thúc -->
+
+  <line x1="475" y1="970" x2="475" y2="1018" stroke="#334155" stroke-width="2" marker-end="url(#arrow)"/>
+
+
+
+  <!-- 12. KẾT THÚC (Oval) -->
+
+  <ellipse cx="475" cy="1045" rx="140" ry="27" fill="#f1f5f9" stroke="#334155" stroke-width="2"/>
+
+  <text x="475" y="1038" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f172a">Kết thúc chu kỳ</text>
+
+  <text x="475" y="1056" text-anchor="middle" font-size="12" fill="#475569">chờ chu kì tiếp theo</text>
+
+
+
+</svg>

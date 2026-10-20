@@ -1,0 +1,48 @@
+﻿// ==============================================================================
+// Du an: SolarClean - He thong ve sinh tam pin nang luong mat troi thong minh
+// Khoi to chuc: OB1 (Main Program Sweep Cycle)
+// Mo ta: Khoi dieu phoi chu ky quet chinh cua PLC S7-1200
+// Tuong duong ban ve Ladder: main.pdf
+// ==============================================================================
+
+ORGANIZATION_BLOCK "Main"
+TITLE = "Main Program Sweep (Cycle)"
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.1
+   VAR_TEMP 
+      Initial_Call : Bool; // True trong chu ky quet dau tien sau khi chuyen sang RUN
+      Remanence : Bool;    // True neu du lieu luu giu (remanence) kha dung
+   END_VAR
+
+BEGIN
+   // --------------------------------------------------------------------------
+   // Network 1: Doc ngo vao vat ly vao Data Block
+   // --------------------------------------------------------------------------
+   "Mapping_Input"();
+
+   // --------------------------------------------------------------------------
+   // Network 2: Xu ly nguon he thong va phan xu che do Auto / Manual
+   // --------------------------------------------------------------------------
+   "Power and Mode"();
+
+   // --------------------------------------------------------------------------
+   // Network 3: Dieu khien Bang tay (Manual1)
+   // Khoa lien dong mem: Chi thuc thi khi KHONG o che do Tu dong (Auto = FALSE)
+   // --------------------------------------------------------------------------
+   IF NOT "Datablock".Auto THEN
+      "Manual1"();
+   END_IF;
+
+   // --------------------------------------------------------------------------
+   // Network 4: Dieu khien Tu dong (Auto)
+   // Khoa lien dong mem: Chi thuc thi khi KHONG o che do Bang tay (Man = FALSE)
+   // --------------------------------------------------------------------------
+   IF NOT "Datablock".Man THEN
+      "Auto"();
+   END_IF;
+
+   // --------------------------------------------------------------------------
+   // Network 5: Xuat tin hieu dieu khien ra cac ngo ra vat ly (%Q)
+   // --------------------------------------------------------------------------
+   "Mapping Output"();
+END_ORGANIZATION_BLOCK

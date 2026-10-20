@@ -1,0 +1,30 @@
+✅ Đã nạp danh sách 19 ảnh mẫu thực tế từ 'D:\DuAn\cong_cu_do_do_tre_ai_thuc_te\snapshots_mau'.
+
+=================================================================
+🚀 BẮT ĐẦU ĐO ĐẠC ĐỘ TRỄ HỌC THUẬT: 30 RUNS | 10 WARM-UP | CUDA (FP16: True)
+=================================================================
+🔄 Đang nạp mô hình AI lên CUDA (FP16: True)...
+✅ Nạp thành công toàn bộ 3 mô hình AI trên CUDA!
+🔥 Bắt đầu Warm-up GPU/CPU (10 chu kỳ để ổn định Clock Rate & CUDA Cache)...
+✅ Hoàn thành Warm-up. Bắt đầu đo chính thức!
+
+======================================================================
+📊 BẢNG TỔNG HỢP KẾT QUẢ ĐỘ TRỄ HỌC THUẬT (IEEE / TNU JST)
+======================================================================
+🖥️ Phần cứng: NVIDIA GeForce RTX 3050 Ti Laptop GPU | Thiết bị: CUDA | Độ chính xác: FP16
+📈 Số mẫu thực nghiệm: N = 30 ảnh
+----------------------------------------------------------------------
+1. YOLOv8-Seg (Tách pin & Nắn góc):   44.73 ± 8.55 ms  [Min: 37.09, Max: 88.96, P95: 46.26]
+2. YOLOv8-Det (Dị vật & Lá cây):      11.92 ± 6.59 ms  [Min: 9.93, Max: 47.20, P95: 13.09]
+3. EfficientNet-B0 (32 Ô Lưới):       19.74 ± 0.19 ms  [Min: 19.47, Max: 20.32, P95: 20.14]
+----------------------------------------------------------------------
+⚡ TỔNG ĐỘ TRỄ SUY LUẬN TOÀN TRÌNH:     76.38 ± 14.92 ms  (Tốc độ: 13.1 FPS)
+   (Khoảng tin cậy 95%: 68.43 ms -> 77.41 ms)
+======================================================================
+
+🎯 Suy luận [1788765086671_181237877564816677_6913485162416607831_108351f900278c00df5524b057ad801a.jpg]: Seg=319.9ms | Det=49.9ms | Eff=50.8ms | Tổng=420.6ms (2.4 FPS)
+🎯 Suy luận [1788765086671_181237877564816677_6913485162416607831_108351f900278c00df5524b057ad801a.jpg]: Seg=220.8ms | Det=48.9ms | Eff=48.9ms | Tổng=318.7ms (3.1 FPS)
+🎯 Suy luận [1788765086671_181237877564816677_6913485162416607831_108351f900278c00df5524b057ad801a.jpg]: Seg=98.5ms | Det=49.6ms | Eff=47.2ms | Tổng=195.3ms (5.1 FPS)
+📂 Đã chọn ảnh tùy chỉnh: D:/DuAn/cong_cu_do_do_tre_ai_thuc_te/snapshots_mau/1788765087501_181237877564816677_6913485162416607831_e9ee3df0e90d66fc4f78aac6ab93ab81.jpg
+🎯 Suy luận [1788765087501_181237877564816677_6913485162416607831_e9ee3df0e90d66fc4f78aac6ab93ab81.jpg]: Seg=247.0ms | Det=53.1ms | Eff=49.8ms | Tổng=349.9ms (2.9 FPS)
+

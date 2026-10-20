@@ -1,0 +1,143 @@
+﻿// ==============================================================================
+// Du an: SolarClean - He thong ve sinh tam pin nang luong mat troi thong minh
+// Khoi chuc nang: FC5 (Auto_StateMachine)
+// Mo ta: Phien ban TOI UU HOA chuan cong nghiep Siemens su dung MAY TRANG THAI (Finite State Machine - FSM)
+//        Loai bo hoan toan cac co ruom ra (Temp7..Temp16), chong troi suon xung,
+//        de bao tri, de doi thoi gian nghi hoac so lan lap chu ky.
+// ==============================================================================
+
+FUNCTION "Auto_StateMachine" : Void
+{ S7_Optimized_Access := 'TRUE' }
+VERSION : 0.2
+   VAR_TEMP 
+      Timer_Bottom_Done : Bool;
+      Timer_Top_Done : Bool;
+   END_VAR
+
+   CONST 
+      // Dinh nghia cac trang thai cua chu trinh tu dong
+      STATE_IDLE         : Int := 0; // Cho tin hieu tu AI
+      STATE_FWD          : Int := 1; // Can gat dang chay xuong
+      STATE_PAUSE_BOTTOM : Int := 2; // Dung nghi 2s tai day tam pin
+      STATE_REV          : Int := 3; // Can gat dang keo len dinh
+      STATE_PAUSE_TOP    : Int := 4; // Dung nghi 2s tai dinh tam pin
+      STATE_DONE         : Int := 5; // Hoan thanh 3 vong, dung chu trinh
+   END_CONST
+
+BEGIN
+   // 1. Kiem tra dieu kien tien quyet: Che do Auto phai dang bat
+   IF NOT "Datablock".Auto THEN
+      "Datablock".Auto_State := STATE_IDLE;
+      "Datablock".Cycle_Count := 0;
+      "Datablock".Motor_FWD := FALSE;
+      "Datablock".Motor_REV := FALSE;
+      "Datablock"."Water Pump" := FALSE;
+      "Datablock".CycleDone := FALSE;
+      RETURN;
+   END_IF;
+
+   // 2. Tiep nhan nhan dien tu AI (DB1) khi dang o trang thai cho
+   IF "Datablock".Auto_State = STATE_IDLE THEN
+      // Nhanh la cay: chi quet kho
+      IF "DB1".DetectLeaf THEN
+         "Datablock".DetectLeaf := TRUE;
+         "Datablock".Auto_State := STATE_FWD;
+         "Datablock".Cycle_Count := 0;
+         "Datablock".CycleDone := FALSE;
+      // Nhanh bui ban hoac phan chim: rua uot bang bom nuoc
+      ELSIF "DB1".DetectDirty OR "DB1".DetechDroppingBird THEN
+         "Datablock".DetectDirty := TRUE;
+         "Datablock"."Water Pump" := TRUE; // Bat bom nuoc
+         "Datablock".Auto_State := STATE_FWD;
+         "Datablock".Cycle_Count := 0;
+         "Datablock".CycleDone := FALSE;
+      END_IF;
+   END_IF;
+
+   // 3. Quan ly Timers nghi tre
+   // Timer nghi 2s tai day LS2
+   "IEC_Timer_0_DB".TON(
+      IN := ("Datablock".Auto_State = STATE_PAUSE_BOTTOM),
+      PT := T#2S
+   );
+   Timer_Bottom_Done := "IEC_Timer_0_DB".Q;
+
+   // Timer nghi 2s tai dinh LS1
+   "IEC_Timer_0_DB_1".TON(
+      IN := ("Datablock".Auto_State = STATE_PAUSE_TOP),
+      PT := T#2S
+   );
+   Timer_Top_Done := "IEC_Timer_0_DB_1".Q;
+
+   // 4. MAY TRANG THAI CHUYEN DONG (FSM Engine)
+   CASE "Datablock".Auto_State OF
+
+      STATE_IDLE:
+         "Datablock".Motor_FWD := FALSE;
+         "Datablock".Motor_REV := FALSE;
+         "Datablock"."Water Pump" := FALSE;
+
+      STATE_FWD:
+         // Dong co chay thuan gat xuong
+         "Datablock".Motor_FWD := TRUE;
+         "Datablock".Motor_REV := FALSE;
+
+         // Cham cong tac hanh trinh day LS2 -> Chuyen sang dung nghi day
+         IF NOT "Datablock".LS2 THEN
+            "Datablock".Motor_FWD := FALSE;
+            "Datablock".Auto_State := STATE_PAUSE_BOTTOM;
+         END_IF;
+
+      STATE_PAUSE_BOTTOM:
+         "Datablock".Motor_FWD := FALSE;
+         "Datablock".Motor_REV := FALSE;
+
+         // Nghi du 2 giay -> Dao chieu keo can gat len
+         IF Timer_Bottom_Done THEN
+            "Datablock".Auto_State := STATE_REV;
+         END_IF;
+
+      STATE_REV:
+         // Dong co chay nghich keo len
+         "Datablock".Motor_FWD := FALSE;
+         "Datablock".Motor_REV := TRUE;
+
+         // Cham cong tac hanh trinh dinh LS1 -> Chuyen sang dung nghi dinh
+         IF NOT "Datablock".LS1 THEN
+            "Datablock".Motor_REV := FALSE;
+            "Datablock".Auto_State := STATE_PAUSE_TOP;
+         END_IF;
+
+      STATE_PAUSE_TOP:
+         "Datablock".Motor_FWD := FALSE;
+         "Datablock".Motor_REV := FALSE;
+
+         // Nghi du 2 giay tai dinh -> Danh gia so vong da chay
+         IF Timer_Top_Done THEN
+            "Datablock".Cycle_Count := "Datablock".Cycle_Count + 1;
+
+            // Neu chua du 3 chu ky (1..2) -> Tiep tuc chay xuong vong tiep theo
+            IF "Datablock".Cycle_Count < 3 THEN
+               "Datablock".Auto_State := STATE_FWD;
+            ELSE
+               // Da du 3 vong -> Ket thuc chu trinh
+               "Datablock".Auto_State := STATE_DONE;
+            END_IF;
+         END_IF;
+
+      STATE_DONE:
+         // Tat toan bo co cau chap hanh
+         "Datablock".Motor_FWD := FALSE;
+         "Datablock".Motor_REV := FALSE;
+         "Datablock"."Water Pump" := FALSE;
+         "Datablock".CycleDone := TRUE;
+         "Datablock".DetectDirty := FALSE;
+         "Datablock".DetectLeaf := FALSE;
+
+         // Tu dong quay ve trang thai IDLE san sang cho lan phat hien tiep theo
+         "Datablock".Auto_State := STATE_IDLE;
+
+      ELSE
+         "Datablock".Auto_State := STATE_IDLE;
+   END_CASE;
+END_FUNCTION

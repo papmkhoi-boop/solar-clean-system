@@ -1,0 +1,91 @@
+﻿// ==============================================================================
+// Du an: SolarClean - He thong ve sinh tam pin nang luong mat troi thong minh
+// Khoi du lieu: DB6 ("Datablock")
+// Mo ta: Luu tru toan bo bien noi bo, co trang thai dieu khien, timers va counter
+// ==============================================================================
+
+DATA_BLOCK "Datablock"
+{ S7_Optimized_Access := 'FALSE' }
+VERSION : 0.1
+NON_RETAIN
+   VAR 
+      // 1. Quan ly nguon & Che do van hanh
+      System : Bool;             // Trang thai nguon toan he thong (ON/OFF)
+      Auto : Bool;               // Che do Tu dong dang hoat dong
+      Man : Bool;                // Che do Bang tay dang hoat dong
+      On_System : Bool;          // Nut bam Start he thong
+      Off_System : Bool;         // Nut bam Stop he thong
+      On_Man : Bool;             // Lenh chon che do Manual
+      On_Auto : Bool;            // Lenh chon che do Auto
+      PowerMan : Bool;           // Co cap nguon cho nhanh dieu khien tay
+      "Power Auto" : Bool;       // Co cap nguon cho nhanh dieu khien tu dong
+      TempFloat : Bool;          // Co bao ve / khoa lien dong an toan
+
+      // 2. Tin hieu Dieu khien Co cau chap hanh
+      Motor_FWD : Bool;          // Lenh chay thuan dong co (Can gat chay xuong)
+      Motor_REV : Bool;          // Lenh chay nghich dong co (Can gat keo len)
+      "Water Pump" : Bool;       // Lenh bat may bom nuoc
+      "Start Wiper" : Bool;      // Nut bam kich hoat can gat bang tay
+      "Start Pump" : Bool;       // Nut bam bat bom bang tay
+      "Stop Pump" : Bool;        // Nut tat bom
+
+      // 3. Tin hieu Cam bien & Dung khan cap
+      LS1 : Bool;                // Cong tac hanh trinh dinh (vi tri ban dau)
+      LS2 : Bool;                // Cong tac hanh trinh day
+      "Temp Estop" : Bool;       // Co dung khan cap E-Stop
+
+      // 4. Nhan dien Khuyet tat (Chot tu DB1)
+      DetectDirty : Bool;        // Co bui ban hoac phan chim (can rua uot)
+      DetectLeaf : Bool;         // Co la cay (chi quet kho)
+
+      // 5. Co dieu khien chu ky & Dinh thoi
+      Timer1 : Bool;             // Bao het thoi gian tre 2s tai dinh (LS1)
+      Timer2 : Bool;             // Bao het thoi gian tre 2s tai day (LS2)
+      TempTimeREV : Bool;        // Co chot kich Timer tre tai day LS2
+      TempTimeFWD : Bool;        // Co chot kich Timer tre tai dinh LS1
+      "Temp 15" : Bool;          // Xung kich hoat chu ky moi (100ms)
+      Temp16 : Bool;             // Co chan xung sau khi hoan thanh
+      CycleDone : Bool;          // Co bao hoan thanh toan bo chu trinh (du 3 luot)
+      "Cycles Stop" : Bool;      // Lenh dung chu ky
+
+      // The hien IEC Timer & Counter truc tiep trong Datablock (Chuan SCL Siemens)
+      Timer_Manual_Delay : TON_TIME;  // Timer 2s cho Manual (%DB10 cu)
+      Timer_Auto_Bottom  : TON_TIME;  // Timer 2s o day cho Auto (%DB2 cu)
+      Timer_Auto_Top     : TON_TIME;  // Timer 2s o dinh cho Auto (%DB3 cu)
+      Timer_Auto_Pulse   : TON_TIME;  // Timer 100ms phat xung Auto (%DB7 cu)
+      Counter_Cycles     : CTU_INT;   // Bo dem 3 vong cho Auto (%DB4 cu)
+
+      // 6. Cac bien co trung gian noi bo (Dong bo voi ban ve LAD goc)
+      "Temp HT" : Bool;
+      TempAuto : Bool;
+      TempMan : Bool;
+      TempPowerAuto : Bool;
+      "Temp PowerMan" : Bool;
+      "Temp pump" : Bool;
+      Temp1 : Bool;
+      Temp3 : Bool;
+      Temp4 : Bool;
+      Temp5 : Bool;
+      Temp6 : Bool;
+      Temp7 : Bool;
+      Temp8 : Bool;
+      Temp9 : Bool;
+      Temp10 : Bool;
+      Temp11 : Bool;
+      TempStartWiper : Bool;
+      Temp_LS1 : Bool;
+      Temp_LS2 : Bool;
+      TempDectectLeaf : Bool;
+      TempDetectDirty : Bool;
+      TempMan_1 : Bool;
+   END_VAR
+
+BEGIN
+   System := FALSE;
+   Auto := FALSE;
+   Man := FALSE;
+   Motor_FWD := FALSE;
+   Motor_REV := FALSE;
+   "Water Pump" := FALSE;
+   CycleDone := FALSE;
+END_DATA_BLOCK

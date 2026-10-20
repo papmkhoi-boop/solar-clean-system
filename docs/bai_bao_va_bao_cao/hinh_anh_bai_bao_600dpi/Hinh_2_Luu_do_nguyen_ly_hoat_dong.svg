@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 950 1420" width="950" height="1420" style="background-color:#ffffff; font-family:'Segoe UI', Arial, Helvetica, sans-serif;">
+  
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#334155" />
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#16a34a" />
+    </marker>
+    <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#dc2626" />
+    </marker>
+    <marker id="arrow-gray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#64748b" />
+    </marker>
+  </defs>
+
+  <!-- TIÊU ĐỀ HỆ THỐNG -->
+  <text x="475" y="32" text-anchor="middle" font-size="16" font-weight="bold" fill="#0f172a" letter-spacing="0.5">LƯU ĐỒ NGUYÊN LÝ HOẠT ĐỘNG CỦA TOÀN HỆ THỐNG</text>
+
+  <!-- 1. BẮT ĐẦU -->
+  <ellipse cx="475" cy="68" rx="100" ry="22" fill="#f1f5f9" stroke="#334155" stroke-width="2"/>
+  <text x="475" y="74" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f172a">BẮT ĐẦU</text>
+  <line x1="475" y1="90" x2="475" y2="115" stroke="#334155" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- ==================== KHỐI KHỞI TẠO (INITIALIZATION) ==================== -->
+  <rect x="180" y="115" width="590" height="115" rx="8" fill="#f8fafc" stroke="#64748b" stroke-width="1.5" stroke-dasharray="6,4"/>
+  <text x="475" y="135" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#475569" letter-spacing="0.3">BƯỚC KHỞI TẠO (CHẠY 1 LẦN / TÁI HIỆU CHUẨN KHI RUNG LẮC)</text>
+  
+  <rect x="200" y="145" width="550" height="35" rx="4" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+  <text x="475" y="167" text-anchor="middle" font-size="12" font-weight="bold" fill="#92400e">YOLOv8-Seg: Phân đoạn bề mặt pin từ ảnh camera 1080p</text>
+
+  <rect x="200" y="185" width="550" height="35" rx="4" fill="#fef3c7" stroke="#d97706" stroke-width="1.5"/>
+  <text x="475" y="207" text-anchor="middle" font-size="12" font-weight="bold" fill="#92400e">Xác định 4 điểm góc viền &amp; Lưu ma trận phối cảnh cố định (M_persp)</text>
+
+  <line x1="475" y1="230" x2="475" y2="260" stroke="#334155" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- ==================== CHU KỲ GIÁM SÁT ĐỊNH KỲ ==================== -->
+  <rect x="80" y="260" width="790" height="330" rx="10" fill="#f0f9ff" stroke="#0284c7" stroke-width="1.8"/>
+  <text x="475" y="282" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#0369a1" letter-spacing="0.3">CHU KỲ GIÁM SÁT ĐỊNH KỲ (~1,10 s / LẦN)</text>
+
+  <!-- Thu nhận và nắn góc -->
+  <rect x="210" y="295" width="530" height="40" rx="4" fill="#ffffff" stroke="#0284c7" stroke-width="1.5"/>
+  <text x="475" y="320" text-anchor="middle" font-size="12" font-weight="bold" fill="#0369a1">Camera chụp ảnh định kỳ → Áp dụng M_persp hiệu chỉnh phối cảnh</text>
+
+  <!-- Mũi tên rẽ 2 luồng AI -->
+  <path d="M 475 335 L 475 355 L 285 355 L 285 375" fill="none" stroke="#334155" stroke-width="2" marker-end="url(#arrow)"/>
+  <path d="M 475 335 L 475 355 L 665 355 L 665 375" fill="none" stroke="#334155" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Luồng 1 (Trái): Dị vật YOLOv8 -->
+  <rect x="145" y="375" width="280" height="52" rx="4" fill="#fef3c7" stroke="#d97706" stroke-width="1.8"/>
+  <text x="285" y="396" text-anchor="middle" font-size="12" font-weight="bold" fill="#92400e">YOLOv8: Phát hiện dị vật cản quang</text>
+  <text x="285" y="414" text-anchor="middle" font-size="11" fill="#78350f">(Lá cây, phân chim - 106,8 ms)</text>
+  <line x1="285" y1="427" x2="285" y2="455" stroke="#334155" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Luồng 2 (Phải): Bụi EfficientNet-B0 -->
+  <rect x="525" y="375" width="280" height="52" rx="4" fill="#f3e8ff" stroke="#9333ea" stroke-width="1.8"/>
+  <text x="665" y="396" text-anchor="middle" font-size="12" font-weight="bold" fill="#6b21a8">EfficientNet-B0: Phân loại 32 ô</text>
+  <text x="665" y="414" text-anchor="middle" font-size="11" fill="#581c87">(Định lượng tỷ lệ bẩn η_soiled - 995,1 ms)</text>
+  <line x1="665" y1="427" x2="665" y2="455" stroke="#334155" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- HÌNH THOI 1: CÓ DỊ VẬT? -->
+  <polygon points="285,455 385,495 285,535 185,495" fill="#fef9c3" stroke="#ca8a04" stroke-width="1.8"/>
+  <text x="285" y="490" text-anchor="middle" font-size="12" font-weight="bold" fill="#78350f">Có dị vật cản quang</text>
+  <text x="285" y="508" text-anchor="middle" font-size="11" font-weight="bold" fill="#78350f">(Lá cây, phân chim)?</text>
+
+  <!-- HÌNH THOI 2: BỤI BÁM VƯỢT NGƯỠNG? -->
+  <polygon points="665,455 765,495 665,535 565,495" fill="#fef9c3" stroke="#ca8a04" stroke-width="1.8"/>
+  <text x="665" y="490" text-anchor="middle" font-size="12" font-weight="bold" fill="#78350f">Tỷ lệ bám bẩn</text>
+  <text x="665" y="508" text-anchor="middle" font-size="11" font-weight="bold" fill="#78350f">η_soiled ≥ η_cài_đặt?</text>
+
+  <!-- LOGIC NỐI DỊ VẬT: "KHÔNG CÓ DỊ VẬT" -> CHUYỂN SANG KIỂM TRA BỤI (LOẠI BỎ LỖI LOGIC NHẢY SANG SẠCH) -->
+  <line x1="385" y1="495" x2="565" y2="495" stroke="#64748b" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#arrow-gray)"/>
+  <rect x="445" y="482" width="60" height="20" rx="3" fill="#ffffff" stroke="#64748b" stroke-width="1"/>
+  <text x="475" y="496" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#64748b">Không</text>
+
+  <!-- DỊ VẬT "CÓ" -> GỬI CỜ ƯU TIÊN 1 SANG PLC -->
+  <line x1="285" y1="535" x2="285" y2="625" stroke="#16a34a" stroke-width="2.5" marker-end="url(#arrow-green)"/>
+  <rect x="292" y="555" width="85" height="34" rx="3" fill="#ffffff" stroke="#16a34a" stroke-width="1.2"/>
+  <text x="334" y="570" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#16a34a">Có (Ưu tiên 1)</text>
+  <text x="334" y="583" text-anchor="middle" font-size="9.5" fill="#166534">Rửa khẩn cấp</text>
+
+  <!-- BỤI "CÓ" -> GỬI CỜ ƯU TIÊN 2 SANG PLC -->
+  <path d="M 665 535 L 665 605 L 390 605 L 390 625" fill="none" stroke="#16a34a" stroke-width="2.5" marker-end="url(#arrow-green)"/>
+  <rect x="575" y="585" width="85" height="34" rx="3" fill="#ffffff" stroke="#16a34a" stroke-width="1.2"/>
+  <text x="617" y="600" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#16a34a">Có (Ưu tiên 2)</text>
+  <text x="617" y="613" text-anchor="middle" font-size="9.5" fill="#166534">Rửa định kỳ</text>
+
+  <!-- BỤI "KHÔNG" -> TẤM PIN SẠCH (ĐỒNG THỜI KHÔNG DỊ VẬT VÀ KHÔNG BỤI) -->
+  <path d="M 765 495 L 825 495 L 825 650" fill="none" stroke="#64748b" stroke-width="2" marker-end="url(#arrow-gray)"/>
+  <rect x="770" y="482" width="48" height="20" rx="3" fill="#ffffff" stroke="#64748b" stroke-width="1"/>
+  <text x="794" y="496" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#64748b">Không</text>
+
+  <!-- KHỐI TẤM PIN SẠCH -->
+  <rect x="740" y="650" width="170" height="50" rx="5" fill="#f8fafc" stroke="#64748b" stroke-width="1.8"/>
+  <text x="825" y="672" text-anchor="middle" font-size="12" font-weight="bold" fill="#334155">Tấm pin SẠCH</text>
+  <text x="825" y="688" text-anchor="middle" font-size="10.5" fill="#64748b">(Ghi log SQLite)</text>
+
+  <!-- ==================== KHỐI PLC & CƠ CẤU RỬA HAI CHIỀU ==================== -->
+  <rect x="130" y="625" width="380" height="55" rx="5" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+  <text x="320" y="648" text-anchor="middle" font-size="14" font-weight="bold" fill="#166534">PLC SIEMENS S7-1200 (CPU 1214C)</text>
+  <text x="320" y="667" text-anchor="middle" font-size="11.5" fill="#15803d">Nhận cờ Snap7 (DB1.DBX0.0-2) • Quét vòng lặp &lt; 10 ms</text>
+
+  <line x1="320" y1="680" x2="320" y2="705" stroke="#16a34a" stroke-width="2" marker-end="url(#arrow-green)"/>
+
+  <!-- BẢNG 5: CHU TRÌNH RỬA 2 CHIỀU (GĐ 1-3) -->
+  <rect x="80" y="705" width="480" height="85" rx="6" fill="#ffffff" stroke="#334155" stroke-width="1.8"/>
+  <text x="320" y="726" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f172a">CHU TRÌNH LÀM SẠCH 2 CHIỀU (30 s - BẢNG 5)</text>
+  <text x="95" y="748" font-size="11" fill="#334155">• GĐ 1 (4 s): Bơm nước áp lực Q0.0 ON phun ẩm màng bụi</text>
+  <text x="95" y="766" font-size="11" fill="#334155">• GĐ 2 (12 s): Động cơ kéo thuận + Bơm phun cọ rửa (chạm End)</text>
+  <text x="95" y="784" font-size="11" fill="#334155">• GĐ 3 (12 s): Động cơ nghịch kéo gạt cao su khô, ngắt bơm (chạm Home)</text>
+
+  <line x1="320" y1="790" x2="320" y2="818" stroke="#334155" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- ==================== GIAI ĐOẠN 4: KIỂM CHỨNG SAU RỬA (BẢNG 5) ==================== -->
+  <rect x="100" y="818" width="440" height="48" rx="5" fill="#e0f2fe" stroke="#0284c7" stroke-width="1.8"/>
+  <text x="320" y="838" text-anchor="middle" font-size="12" font-weight="bold" fill="#0369a1">GĐ 4: Camera AI chụp kiểm chứng sau rửa (2 s)</text>
+  <text x="320" y="854" text-anchor="middle" font-size="11" fill="#075985">Tính toán tỷ lệ bám bẩn sau rửa (η_sau)</text>
+
+  <line x1="320" y1="866" x2="320" y2="895" stroke="#334155" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- HÌNH THOI 3: KIỂM TRA ĐẠT η_sau < 5%? -->
+  <polygon points="320,895 440,935 320,975 200,935" fill="#fef9c3" stroke="#ca8a04" stroke-width="1.8"/>
+  <text x="320" y="930" text-anchor="middle" font-size="12" font-weight="bold" fill="#78350f">Đạt tiêu chuẩn sạch</text>
+  <text x="320" y="948" text-anchor="middle" font-size="11.5" font-weight="bold" fill="#78350f">η_sau &lt; 5% (Bảng 5)?</text>
+
+  <!-- ĐẠT -> XUỐNG DATABASE & IOT -->
+  <line x1="320" y1="975" x2="320" y2="1080" stroke="#16a34a" stroke-width="2.5" marker-end="url(#arrow-green)"/>
+  <rect x="325" y="1005" width="48" height="22" rx="3" fill="#ffffff" stroke="#16a34a" stroke-width="1.2"/>
+  <text x="349" y="1020" text-anchor="middle" font-size="11" font-weight="bold" fill="#16a34a">Đạt</text>
+
+  <!-- CHƯA ĐẠT (η ≥ 5%) -> KIỂM TRA SỐ LẦN RỬA N_wash < 2 -->
+  <line x1="200" y1="935" x2="110" y2="935" stroke="#dc2626" stroke-width="2" marker-end="url(#arrow-red)"/>
+  <rect x="122" y="922" width="65" height="20" rx="3" fill="#ffffff" stroke="#dc2626" stroke-width="1"/>
+  <text x="154" y="936" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#dc2626">Chưa đạt</text>
+
+  <!-- HÌNH THOI 4: SỐ LẦN RỬA LẶP LẠI -->
+  <polygon points="60,905 110,935 60,965 10,935" fill="#fee2e2" stroke="#dc2626" stroke-width="1.5"/>
+  <text x="60" y="932" text-anchor="middle" font-size="10" font-weight="bold" fill="#991b1b">Lần rửa</text>
+  <text x="60" y="944" text-anchor="middle" font-size="10" font-weight="bold" fill="#991b1b">N &lt; 2?</text>
+
+  <!-- N < 2 -> VÒNG LẶP RỬA LẠI (GĐ 1) -->
+  <path d="M 60 905 L 60 747 L 80 747" fill="none" stroke="#dc2626" stroke-width="1.8" marker-end="url(#arrow-red)"/>
+  <rect x="25" y="810" width="48" height="18" rx="2" fill="#ffffff" stroke="#dc2626" stroke-width="1"/>
+  <text x="49" y="823" text-anchor="middle" font-size="9.5" font-weight="bold" fill="#dc2626">Rửa lại</text>
+
+  <!-- N >= 2 -> CẢNH BÁO BẤT THƯỜNG / VẾT BẨN CỨNG ĐẦU -->
+  <path d="M 60 965 L 60 1020 L 140 1020" fill="none" stroke="#dc2626" stroke-width="1.8" marker-end="url(#arrow-red)"/>
+  <rect x="140" y="1002" width="145" height="36" rx="4" fill="#fee2e2" stroke="#dc2626" stroke-width="1.5"/>
+  <text x="212" y="1018" text-anchor="middle" font-size="10.5" font-weight="bold" fill="#991b1b">Cảnh báo SCADA/IoT</text>
+  <text x="212" y="1031" text-anchor="middle" font-size="9.5" fill="#7f1d1d">Vết bẩn bám dính cao</text>
+
+  <path d="M 212 1038 L 212 1105 L 320 1105" fill="none" stroke="#64748b" stroke-width="1.5"/>
+
+  <!-- NỐI TẤM PIN SẠCH VÀO DATABASE -->
+  <path d="M 825 700 L 825 1105 L 530 1105" fill="none" stroke="#64748b" stroke-width="2"/>
+
+  <!-- ==================== KHỐI DATABASE & IOT SCADA ==================== -->
+  <rect x="240" y="1080" width="470" height="52" rx="6" fill="#e2e8f0" stroke="#475569" stroke-width="2"/>
+  <text x="475" y="1102" text-anchor="middle" font-size="13" font-weight="bold" fill="#0f172a">LƯU TRỮ DATABASE SQLITE &amp; TRUYỀN DỮ LIỆU IOT</text>
+  <text x="475" y="1120" text-anchor="middle" font-size="11" fill="#334155">Cập nhật VPV, IPV, PPV (PZEM-017), η_soiled, Log trạng thái lên Web/App qua WebSocket/MQTT</text>
+
+  <line x1="475" y1="1132" x2="475" y2="1165" stroke="#334155" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- ==================== KẾT THÚC VÀ VÒNG LẶP ==================== -->
+  <ellipse cx="475" cy="1195" rx="140" ry="26" fill="#f1f5f9" stroke="#334155" stroke-width="2"/>
+  <text x="475" y="1192" text-anchor="middle" font-size="12.5" font-weight="bold" fill="#0f172a">KẾT THÚC CHU KỲ</text>
+  <text x="475" y="1208" text-anchor="middle" font-size="11" fill="#475569">Chờ khoảng thời gian cài đặt cho chu kỳ kế tiếp</text>
+
+  <!-- ĐƯỜNG VÒNG LẶP QUAY VỀ CHU KỲ GIÁM SÁT -->
+  <path d="M 615 1195 L 920 1195 L 920 280 L 870 280" fill="none" stroke="#0284c7" stroke-width="2" stroke-dasharray="6,4" marker-end="url(#arrow)"/>
+  <rect x="880" y="730" width="38" height="20" rx="2" fill="#ffffff" stroke="#0284c7" stroke-width="1"/>
+  <text x="899" y="744" text-anchor="middle" font-size="10" font-weight="bold" fill="#0284c7">Lặp</text>
+
+</svg>
